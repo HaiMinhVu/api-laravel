@@ -114,4 +114,8 @@ return [
 
     'password_timeout' => 10800,
 
+    'api_auth' => [
+        'token' => 'Y4=nsSabrJ6C8q-6XvYVMp6zDX@BYPnFmPP2k7$G%txKm%@5X4ku5rJE2ap?ZwyZYjcn^8BJZ*P7y@hPwp+r$@KMTfynkXP-a98DRBYGH%AU^?!R6+SM7?S8aRM?v_TK'
+    ]
+
 ];
