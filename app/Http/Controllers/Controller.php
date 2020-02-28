@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 use Cache;
 use Closure;
 use Str;
+use App;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     protected function cacheResponse(Request $request, Closure $callback) {
-    	$cacheKey = Str::slug($request->path(), '_');
+    	$cacheKey = Str::slug($request->path()).'_'.App::environment();
 
     	if(!Cache::has($cacheKey) || $request->has('force-update')) {
     		Cache::put($cacheKey, $callback()); 
