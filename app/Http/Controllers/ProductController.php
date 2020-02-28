@@ -58,8 +58,10 @@ class ProductController extends Controller
 
     public function getFeatured(Request $request, $manufacturerId, $featuredProduct)
     {
-        $featuredProduct = FeaturedProduct::with(['featuredProducts'])->find($featuredProduct);
-        return $featuredProduct;
+        return $this->cacheResponse($request, function() use ($request, $manufacturerId, $featuredProduct) { 
+            $featuredProduct = FeaturedProduct::with(['featuredProducts'])->find($featuredProduct);
+            return $featuredProduct;
+        });
     }
 
 }
