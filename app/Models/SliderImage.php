@@ -23,6 +23,11 @@ class SliderImage extends Model
         });
     }
 
+    public function scopeIsParent($query)
+    {
+        return $query->where('pid', 0);
+    }
+
     public function images()
     {
         return $this->hasMany(SliderImage::class, 'pid');

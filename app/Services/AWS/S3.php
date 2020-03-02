@@ -24,17 +24,20 @@ class S3
 
     public function syncFromUrl($fileName, $fileUrl)
     {
-        $success = true;
+        $response = (object)['success' => true, 'filename' => $fileName, 'status' => 'uploaded'];
         if(!$this->doesFileExistInS3($fileName)) {
           $fileContents = file_get_contents($fileUrl);
           try {
               $this->upload($fileName, $fileContents);
           } catch(\Exception $e) {
               // dd($e->getMessage());
-              $success = false;
+              $response->success = false;
+              $response->status = $e->getMessage();
           }
+        } else {
+            $response->status = 'already exists';
         }
-        return $success;
+        return $response;
     }
 
     public function doesFileExistInS3($key) {

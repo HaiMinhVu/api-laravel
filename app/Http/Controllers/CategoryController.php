@@ -20,7 +20,8 @@ class CategoryController extends Controller
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId) { 
             $ProductCategories = ProductCategory::topLevelCategoriesByManufacturer($manufacturerId)->whereHas('products')->get();
-            return (new CategoryCollectionResource($ProductCategories))->jsonSerialize();
+            $data = (new CategoryCollectionResource($ProductCategories))->jsonSerialize();
+            return response()->json(['data' => $data]);
         });
     }
 
@@ -29,17 +30,17 @@ class CategoryController extends Controller
         return Product::create($request->all());
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $manufacturerId, $id)
     {
-        $category = ProductCategory::where('id', $id)->with(['subCategories' => function($q){
-            $q->whereHas('products');
-            $q->with('fileManager');
-        }])->first();
+        return $this->cacheResponse($request, function() use ($request, $manufacturerId, $id) { 
+            $category = ProductCategory::where('id', $id)->with(['subCategories' => function($q){
+                $q->whereHas('products');
+                $q->with('fileManager');
+            }])->first();
 
-        return new ProductCategoryResource($category);
-
-        $category['sub_categories'] = new CategoryCollectionResource($category['sub_categories']);
-        return $category;
+            $data = (new ProductCategoryResource($category))->jsonSerialize();
+            return response()->json(['data' => $data]);
+        });
     }
 
     public function update(Request $request, $product)
@@ -69,8 +70,7 @@ class CategoryController extends Controller
                 $q->topLevelCategoriesByManufacturer($manufacturerId);
             })->hasParent();
         })->get();
-        // dd($cate)
-        // $categories = ProductCategory::byManufacturer($manufacturerId)->get();
+
         return new CategoryCollectionResource($categories);
     }
 

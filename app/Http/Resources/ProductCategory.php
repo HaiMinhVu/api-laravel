@@ -15,14 +15,13 @@ class ProductCategory extends JsonResource
      * @return array
      */
     public function toArray($request)
-    {
-        $image = ($this->fileManager) ? $this->fileManager->url() : FileManager::defaultImage();
-        
+    {        
         $data = [
             'id' => $this->id,
             'label' => $this->label,
             'parent' => $this->parent,
-            'image' => $image
+            'image' => $this->imageUrl(),
+            'remote_path' => optional($this->fileManager)->s3FilePath()
         ];
 
         if($this->relationLoaded('subCategories')) {

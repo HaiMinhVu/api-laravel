@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use App\Models\{Product, ProductImage};
+use App\Models\{FeaturedProduct, Product, ProductImage};
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 use Aws\S3\ObjectUploader;
@@ -30,7 +30,7 @@ class UploadProductImages extends Command
      *
      * @var string
      */
-    protected $signature = "upload:product-images {--manufacturer= : Upload by manufacturer} {--sku=* : The upload by sku(s)}";
+    protected $signature = "upload:product-images {--manufacturer= : Upload by manufacturer} {--sku=* : Upload by sku(s)} {--featured-id= : Upload by featured id}";
 
     /**
      * The console command description.
@@ -66,6 +66,8 @@ class UploadProductImages extends Command
         $skus = $this->option('sku');
         if(count($skus) > 0) {
             $this->uploadBySkus($skus);
+        } else if($featuredId = $this->option('featured-id')) {
+            $this->uploadByFeaturedId($featuredId);
         } else {
             $this->uploadByManufacturer();
         }
@@ -77,31 +79,43 @@ class UploadProductImages extends Command
         $this->uploadProductImages($products);
     }
 
+    private function uploadByFeaturedId($featuredId)
+    {
+        $featuredProductParent = FeaturedProduct::with(['featuredProducts'])->find($featuredId);
+        $featuredProducts = $featuredProductParent->featuredProducts->map(function($featuredProduct){
+            return $featuredProduct->product;
+        });
+        $this->uploadProductImages($featuredProducts);
+    }
+
     private function uploadByManufacturer()
     {
         $this->setManufacturer();
         $products = Product::active()->byManufacturer($this->manufacturer)->with('images')->get();
-        dd($products);
-        $this->uploadProductImages($product);
+        $this->uploadProductImages($products);
     }
 
     private function uploadProductImages($products)
     {
         $products->map(function($product){
-            $filePath = $product->mainImage->filePath();
-            $fileName = $this->s3FileName($filePath);
-            $fileUrl = $product->mainImage->url();
-            $this->uploadProductImage($fileName, $fileUrl);
+            $response = $product->mainImage->syncWithS3();
+            $this->parseInfo($response);
 
             $product->images->map(function($image){
                 if($image->fileManager()->exists()) {
-                    $filePath = $image->fileManager->filePath();
-                    $fileName = $this->s3FileName($filePath);
-                    $fileUrl = $image->fileManager->url();
-                    $this->uploadProductImage($fileName, $fileUrl);
+                    $response = $image->fileManager->syncWithS3();
+                    $this->parseInfo($response);
                 }
             });
         });
+    }
+
+    private function parseInfo($response)
+    {
+        $this->info(PHP_EOL);
+        $this->info("File Name: {$response->filename}".PHP_EOL);
+        $this->info("Success: {$response->success}".PHP_EOL);
+        $this->info("Status: {$response->status}".PHP_EOL);
     }
 
     private function uploadProductImage($fileName, $fileUrl)
