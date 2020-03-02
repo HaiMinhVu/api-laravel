@@ -98,23 +98,13 @@ class UploadProductImages extends Command
     private function uploadProductImages($products)
     {
         $products->map(function($product){
-            // $filePath = $product->mainImage->filePath();
             $response = $product->mainImage->syncWithS3();
             $this->parseInfo($response);
-            // $this->info("Processing file: {$imageName");
-            // $fileName = $this->s3FileName($filePath);
-            // $fileUrl = $product->mainImage->url();
-            // $this->uploadProductImage($fileName, $fileUrl);
 
             $product->images->map(function($image){
                 if($image->fileManager()->exists()) {
                     $response = $image->fileManager->syncWithS3();
                     $this->parseInfo($response);
-                    // $this->info("Processing file: {$imageName");
-                    // $filePath = $image->fileManager->filePath();
-                    // $fileName = $this->s3FileName($filePath);
-                    // $fileUrl = $image->fileManager->url();
-                    // $this->uploadProductImage($fileName, $fileUrl);
                 }
             });
         });
