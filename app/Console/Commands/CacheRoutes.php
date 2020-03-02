@@ -64,12 +64,12 @@ class CacheRoutes extends Command
     {
         foreach(self::API_VERSIONS as $version) {
             $this->setApiVersion($version);
-            // foreach(self::MANUFACTURERS as $manufacturer) {
-            //     $this->setManufacturer($manufacturer);
-            //     $this->cacheCategoryRoutes();
-            //     $this->cacheProductRoutes();
-            // }
-            // $this->cacheFeaturedRoutes();
+            foreach(self::MANUFACTURERS as $manufacturer) {
+                $this->setManufacturer($manufacturer);
+                $this->cacheCategoryRoutes();
+                $this->cacheProductRoutes();
+            }
+            $this->cacheFeaturedRoutes();
             $this->cacheSliderRoutes();
         }
     }
