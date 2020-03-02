@@ -9,6 +9,8 @@ use S3;
 
 class FileManager extends Model
 {
+    const DEFAULT_DIRECTORY = 'uncategorized';
+
     protected $table='file_manager';
 
     public $timestamps = false;
@@ -37,18 +39,22 @@ class FileManager extends Model
 
     public function s3FilePath()
     {
-        $manufacturerPrefix = Str::kebab($this->siteList->label);
+        if($label = optional($this->siteList)->label) {
+            $manufacturerPrefix = Str::kebab($this->siteList->label);
+        } else {
+            $manufacturerPrefix = self::DEFAULT_DIRECTORY;
+        }
         $filePath = $this->filePath();
         return "{$manufacturerPrefix}/{$filePath}";
     }
 
     public function url()
     {
-        // if($this->siteList()->exists()) {
+        if($this->siteList()->exists()) {
             $filePath = $this->filePath();
             $url = $this->getPublicUrl();
             return "{$url}{$filePath}";
-        // }
+        }
         return null;
     }
 

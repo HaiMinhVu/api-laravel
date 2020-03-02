@@ -13,13 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::group(['prefix' => '{manufacturerId}'], function() use ($router) {
-
-
     $router->post('contact', 'ContactUsController');
     $router->group(['prefix' => 'product'], function() use ($router) {
         $router->post('registration', 'ProductRegistrationController');
@@ -29,7 +23,6 @@ Route::group(['prefix' => '{manufacturerId}'], function() use ($router) {
     $router->group(['prefix' => 'products'], function() use ($router) {
         $router->get('/', 'ProductController@index');
         $router->get('names', 'ProductController@getSlugs');
-        $router->get('featured/{featuredProduct}', 'ProductController@getFeatured');
     });
 
     $router->get('categories', 'CategoryController@index');
@@ -41,9 +34,16 @@ Route::group(['prefix' => '{manufacturerId}'], function() use ($router) {
         });
     });
 
-    $router->get('slider/{slider}', 'SliderController@show');
+    // $router->get('slider/{slider}', 'SliderController@show');
 });
+
+$router->group(['prefix' => 'products'], function() use ($router) {
+    $router->get('featured', 'ProductController@getFeaturedList');
+    $router->get('featured/{featuredProduct}', 'ProductController@getFeatured');
+});
+
+    Route::resource('slider', 'SliderController')->only(['index', 'show']);
 
 Route::get('dealers', 'DealerController@index');
 
-Route::get('navigation/{id}', 'NavController@show');
+Route::apiResource('navigation', 'NavController')->only(['index', 'show']);

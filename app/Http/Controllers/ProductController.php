@@ -3,13 +3,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB as DB;
 use App\Models\{FeaturedProduct, Product};
 use App\Http\Resources\{
     ProductCollection as ProductCollectionResource,
     ProductWithRelations as ProductWithRelationsResource
 };
-use Illuminate\Support\Str;
 use Cache;
 
 class ProductController extends Controller
@@ -19,7 +17,8 @@ class ProductController extends Controller
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId) { 
             $products = Product::active()->byManufacturer($manufacturerId)->with('netsuiteProduct')->get();
-            return (new ProductCollectionResource($products))->jsonSerialize();
+            $data = (new ProductCollectionResource($products))->jsonSerialize();
+            return response()->json(['data' => $data]);
         });
     }
 
@@ -32,7 +31,8 @@ class ProductController extends Controller
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId, $nsid) { 
             $product = Product::byManufacturer($manufacturerId)->where('nsid', $nsid)->withAllRelations()->first();
-            return ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
+            $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
+            return response()->json(['data' => $data]);
         });
     }
 
@@ -48,19 +48,37 @@ class ProductController extends Controller
 
     public function getSlugs(Request $request, $manufacturerId)
     {
-        return Product::withoutGlobalScopes()->select('nsid', 'feature_name')->get()->map(function($item){
-            return [
-                'id' => $item->nsid,
-                'name' => $item->feature_name
-            ];
+        return $this->cacheResponse($request, function() use ($request, $manufacturerId) { 
+            $data = Product::withoutGlobalScopes()->select('nsid', 'feature_name')->get()->map(function($item){
+                return [
+                    'id' => $item->nsid,
+                    'name' => $item->feature_name
+                ];
+            });
+
+            return response()->json(['data' => $data]);
         });
     }
 
-    public function getFeatured(Request $request, $manufacturerId, $featuredProduct)
+    public function getFeaturedList(Request $request)
     {
-        return $this->cacheResponse($request, function() use ($request, $manufacturerId, $featuredProduct) { 
-            $featuredProduct = FeaturedProduct::with(['featuredProducts'])->find($featuredProduct);
-            return $featuredProduct;
+        return $this->cacheResponse($request, function() use ($request) { 
+            $data = FeaturedProduct::select(['id', 'description'])->without('product')->where('pid', 0)->get();
+            return response()->json(['data' => $data]); 
+        });
+    }
+
+    public function getFeatured(Request $request, $featuredProduct)
+    {
+        return $this->cacheResponse($request, function() use ($request, $featuredProduct) { 
+            $featuredProductParent = FeaturedProduct::with(['featuredProducts'])->find($featuredProduct);
+
+            $featuredProducts = $featuredProductParent->featuredProducts->map(function($featuredProduct){
+                return $featuredProduct->product;
+            })->sortByDesc('id');
+
+            $data = (new ProductCollectionResource($featuredProducts))->jsonSerialize();
+            return response()->json(['data' => $data]);
         });
     }
 

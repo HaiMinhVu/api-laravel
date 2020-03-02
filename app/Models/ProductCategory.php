@@ -71,4 +71,9 @@ class ProductCategory extends Model
             });
         });
     }
+
+    public function imageUrl()
+    {
+        return ($this->fileManager && $this->fileManager->url()) ? $this->fileManager->url() : FileManager::defaultImage();
+    }
 }

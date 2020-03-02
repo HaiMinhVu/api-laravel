@@ -10,6 +10,11 @@ class NavCat extends Model
 
     public $timestamps = false;
 
+    public function  scopeIsParent($query)
+    {
+    	return $query->where('parent', 0);
+    }
+
     public function items()
     {
         return $this->hasMany(NavCat::class, 'parent');

@@ -74,7 +74,7 @@ class Product extends Model
             $q->where('onlineprice', '!=', 0);
             $q->orderBy('startdate', 'DESC');
             $q->orderBy('sku', 'DESC');
-        });
+        })->where('status', 1);
     }
 
     public function category()
