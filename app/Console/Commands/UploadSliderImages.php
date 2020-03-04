@@ -38,7 +38,11 @@ class UploadSliderImages extends Command
         if($sliderImages = optional(SliderImage::find($this->option('slider-id')))->images) {
             $sliderImages->map(function($sliderImage){
                 $this->info("Syncing file: {$sliderImage->fileManager->file_name}");
-                $sliderImage->fileManager->syncWithS3();
+		try {
+                    $sliderImage->fileManager->syncWithS3();
+		} catch (\Exception $e) {
+		    $this->error($e->getMessage());
+  		}
             });
         }
     }

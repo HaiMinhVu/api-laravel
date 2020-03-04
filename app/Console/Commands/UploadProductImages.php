@@ -112,10 +112,10 @@ class UploadProductImages extends Command
 
     private function parseInfo($response)
     {
-        $this->info(PHP_EOL);
-        $this->info("File Name: {$response->filename}".PHP_EOL);
-        $this->info("Success: {$response->success}".PHP_EOL);
-        $this->info("Status: {$response->status}".PHP_EOL);
+        $this->info(PHP_EOL."{$response->filename} - {$response->status}");
+        // $this->info("File Name: {$response->filename}".PHP_EOL);
+        // $this->info("Success: {$response->success}".PHP_EOL);
+        // $this->info("Status: {$response->status}".PHP_EOL);
     }
 
     private function uploadProductImage($fileName, $fileUrl)
