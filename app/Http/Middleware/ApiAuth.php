@@ -20,9 +20,9 @@ class ApiAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$this->authorized($request)) {
-            return response()->json(['message' => self::MESSAGE], self::CODE);
-        }
+        // if (!$this->authorized($request)) {
+        //     return response()->json(['message' => self::MESSAGE], self::CODE);
+        // }
 
         return $next($request);
 

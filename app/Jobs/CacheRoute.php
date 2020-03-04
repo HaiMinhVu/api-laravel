@@ -45,7 +45,6 @@ class CacheRoute implements ShouldQueue
             $req->headers->add($this->headers);
             $res = app()->handle($req);
             $data = $res->getContent();
-            print_r($data);
         } catch(\Exception $e) {
             // TODO: log error
         }
