@@ -42,8 +42,7 @@ $router->group(['prefix' => 'products'], function() use ($router) {
     $router->get('featured/{featuredProduct}', 'ProductController@getFeatured');
 });
 
-    Route::resource('slider', 'SliderController')->only(['index', 'show']);
-
-Route::get('dealers', 'DealerController@index');
-
+Route::resource('slider', 'SliderController')->only(['index', 'show']);
+// Route::get('dealers', 'DealerController@index');
 Route::apiResource('navigation', 'NavController')->only(['index', 'show']);
+Route::apiResource('brand', 'ManufacturerController')->only(['index']);

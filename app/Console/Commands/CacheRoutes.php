@@ -66,8 +66,8 @@ class CacheRoutes extends Command
             $this->setApiVersion($version);
             foreach(self::MANUFACTURERS as $manufacturer) {
                 $this->setManufacturer($manufacturer);
-                $this->cacheCategoryRoutes();
                 $this->cacheProductRoutes();
+                $this->cacheCategoryRoutes();
             }
             $this->cacheFeaturedRoutes();
             $this->cacheSliderRoutes();
@@ -76,26 +76,26 @@ class CacheRoutes extends Command
 
     private function cacheCategoryRoutes()
     {
-        $this->cacheRoute('categories');
         $this->cacheAllCategoryRoutes();
+        $this->cacheRoute('categories');
     }
 
     private function cacheProductRoutes()
     {
-        $this->cacheRoute('products');
         $this->cacheAllProductRoutes();
+        $this->cacheRoute('products');
     }
 
     private function cacheFeaturedRoutes()
     {
-        $this->cacheRoute('products/featured', false);
         $this->cacheAllFeaturedRoutes();
+        $this->cacheRoute('products/featured', false);
     }
 
     private function cacheSliderRoutes()
     {
-        $this->cacheRoute('slider', false);
         $this->cacheAllSliderRoutes();
+        $this->cacheRoute('slider', false);
     }
 
     private function cacheAllCategoryRoutes()
@@ -109,7 +109,7 @@ class CacheRoutes extends Command
     private function cacheAllProductRoutes()
     {
         Product::active()->byManufacturer($this->currentManufacturer)->orderBy('id', 'DESC')->get()->map(function($product){
-            $this->cacheRoute("v1/product/{$product->nsid}");
+            $this->cacheRoute("product/{$product->nsid}");
         });
     }
 

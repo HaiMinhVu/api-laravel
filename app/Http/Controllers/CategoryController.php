@@ -63,15 +63,19 @@ class CategoryController extends Controller
 
     public function getAll(Request $request, $manufacturerId)
     {
-        $categories = ProductCategory::where(function($q) use ($manufacturerId){
-            $q->where(function($q) use ($manufacturerId){
-                $q->byManufacturer($manufacturerId);
-            })->orWhere(function($q) use ($manufacturerId){
-                $q->topLevelCategoriesByManufacturer($manufacturerId);
-            })->hasParent();
-        })->get();
+        return $this->cacheResponse($request, function() use ($request, $manufacturerId) { 
+            $categories = ProductCategory::where(function($q) use ($manufacturerId){
+                $q->where(function($q) use ($manufacturerId){
+                    $q->byManufacturer($manufacturerId);
+                })->orWhere(function($q) use ($manufacturerId){
+                    $q->topLevelCategoriesByManufacturer($manufacturerId);
+                })->hasParent();
+            })->get();
 
-        return new CategoryCollectionResource($categories);
+            $data = new CategoryCollectionResource($categories);
+
+            return response()->json(['data' => $data]);
+        });
     }
 
 }

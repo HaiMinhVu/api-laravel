@@ -34,18 +34,20 @@ class FileManager extends Model
 
     public function filePath()
     {
-        return "{$this->sitePath->description}{$this->file_name}";
+        $filePath = '';
+        if($this->sitePath()->exists()) {
+            $filePath = $this->sitePath->description;
+        }
+        return $filePath.$this->file_name;
     }
 
     public function s3FilePath()
     {
+        $s3FilePath = '';
         if($label = optional($this->siteList)->label) {
-            $manufacturerPrefix = Str::kebab($this->siteList->label);
-        } else {
-            $manufacturerPrefix = self::DEFAULT_DIRECTORY;
-        }
-        $filePath = $this->filePath();
-        return "{$manufacturerPrefix}/{$filePath}";
+            $s3FilePath = Str::kebab($this->siteList->label).'/';
+        } 
+        return $s3FilePath.$this->filePath();
     }
 
     public function url()
