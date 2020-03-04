@@ -32,11 +32,11 @@ class ProductRegistrationController extends Controller
 
     public function __invoke(Request $request, $manufacturer){
 
-        $productRegistration = ProductRegistration::orderBy('id', 'DESC')->first();
+        // $productRegistration = ProductRegistration::orderBy('id', 'DESC')->first();
 
         // Mail::to($productRegistration->email)->send(new ProductRegistered($productRegistration));
 
-        return (new ProductRegistrationResource($productRegistration));
+        // return (new ProductRegistrationResource($productRegistration));
 
         if($this->validate($request, $this->validationRules)) {
             $data = [
