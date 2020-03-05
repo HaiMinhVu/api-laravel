@@ -62,8 +62,7 @@ class FileManager extends Model
 
     public function getPublicUrl()
     {
-        $url = $this->siteList->url;
-        return str_replace('pulsarnv', 'old.pulsarnv', $url);
+        return $this->siteList->url;
     }
 
     public function syncWithS3()
