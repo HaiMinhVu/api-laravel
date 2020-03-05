@@ -75,6 +75,7 @@ class CacheRoutes extends Command
             $this->cacheSliderRoutes();
         }
         
+        $this->runQueue();
     }
 
     private function cacheCategoryRoutes()
@@ -159,7 +160,7 @@ class CacheRoutes extends Command
        private function runQueue()
     {
         $this->call('queue:work', [
-            "--queue={self::QUEUE_NAME}", 
+            "--queue" => self::QUEUE_NAME, 
             "--stop-when-empty"
         ]);
     }
