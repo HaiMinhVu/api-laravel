@@ -31,6 +31,7 @@ class CacheRoutes extends Command
     protected $description = 'Cache all api routes';
 
     private $router;
+    private $cacheCount = 0;
     private $headers;
     private $currentManufacturer;
     private $currentApiVersion;
@@ -74,7 +75,7 @@ class CacheRoutes extends Command
             $this->cacheFeaturedRoutes();
             $this->cacheSliderRoutes();
         }
-        
+        $this->info("Added {$this->cacheCount} routes to queue");
         $this->runQueue();
     }
 
@@ -135,7 +136,7 @@ class CacheRoutes extends Command
     {   
         $url = $this->fullRoute($urlPath, $isManufacturerRoute);
         CacheRoute::dispatch($url)->onQueue(self::QUEUE_NAME);
-        $this->info("Added to queue: {$url}");
+        $this->cacheCount++;
     }
 
     private function fullRoute($urlPath, $isManufacturerRoute = true)
@@ -161,7 +162,7 @@ class CacheRoutes extends Command
     {
         $this->call('queue:work', [
             "--queue" => self::QUEUE_NAME, 
-            "--stop-when-empty"
+            "--stop-when-empty" => true
         ]);
     }
 }
