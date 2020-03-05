@@ -43,6 +43,8 @@ class CacheRoutes extends Command
         'pulsar',
     ];
 
+    const QUEUE_NAME = 'route_queue';
+
     /**
      * Create a new command instance.
      *
@@ -72,6 +74,7 @@ class CacheRoutes extends Command
             $this->cacheFeaturedRoutes();
             $this->cacheSliderRoutes();
         }
+        
     }
 
     private function cacheCategoryRoutes()
@@ -130,7 +133,7 @@ class CacheRoutes extends Command
     private function cacheRoute($urlPath, $isManufacturerRoute = true)
     {   
         $url = $this->fullRoute($urlPath, $isManufacturerRoute);
-        CacheRoute::dispatch($url)->onQueue($this->currentQueue());
+        CacheRoute::dispatch($url)->onQueue(self::QUEUE_NAME);
         $this->info("Added to queue: {$url}");
     }
 
@@ -153,8 +156,11 @@ class CacheRoutes extends Command
         $this->currentManufacturer = $manufacturer;
     }
 
-    private function currentQueue()
+       private function runQueue()
     {
-        return "route_queue";
+        $this->call('queue:work', [
+            "--queue={self::QUEUE_NAME}", 
+            "--stop-when-empty"
+        ]);
     }
 }
