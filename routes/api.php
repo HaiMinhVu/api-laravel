@@ -40,6 +40,7 @@ Route::group(['prefix' => '{manufacturerId}'], function() use ($router) {
 $router->group(['prefix' => 'products'], function() use ($router) {
     $router->get('featured', 'ProductController@getFeaturedList');
     $router->get('featured/{featuredProduct}', 'ProductController@getFeatured');
+    $router->post('netsuite', 'NetsuiteProductController@massUpdate');
 });
 
 Route::resource('slider', 'SliderController')->only(['index', 'show']);
