@@ -72,15 +72,15 @@ class NetsuiteProduct extends Model
             "nsid" => $data['internalId'],
             "active_in_webstore" => $data['isOnline'] ? 'Yes' : 'No',
             "inactive" => $data['isActive'] ? 'Yes' : 'No',
-            "ns_product_category" => $data['netsuiteCategory'],
+            "ns_product_category" => $data['netsuiteCategory'] ?? 'Uncategorized',
             "startdate" => self::parseTimeV1($data['startDate']),
             "enddate" => self::parseTimeV1($data['endDate']),
-            "sku" => $data['itemId'],
-            "featured_description" => $data['salesDescription'],
-            "UPC" => $data['upcCode'],
-            "description" => $data['purchaseDescription'],
-            "ECCN" => $data['eccn'],
-            "CCATS" => $data['ccats'],
+            "sku" => $data['itemId'] ?? '',
+            "featured_description" => $data['salesDescription'] ?? '',
+            "UPC" => $data['upcCode'] ?? '',
+            "description" => $data['purchaseDescription'] ?? '',
+            "ECCN" => $data['eccn'] ?? '',
+            "CCATS" => $data['ccats'] ?? '',
             "online_price" => $pricing['onlinePrice'] ?? 0,
             "map" => $pricing['map'] ?? 0,
             "total_quantity_on_hand" => $data['quantityOnHand'] ?? 0,
@@ -98,7 +98,7 @@ class NetsuiteProduct extends Model
             "specials" => $pricing['specials'] ?? 0,
             "onlineprice" => $pricing['onlinePrice'] ?? 0,
             "backordered" => $data['quantityBackOrdered'] ?? 0,
-            "product_sizing" => $data['productSizing']
+            "product_sizing" => $data['productSizing'] ?? ''
         ];
     }
 
