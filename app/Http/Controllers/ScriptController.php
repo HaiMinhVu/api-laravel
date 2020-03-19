@@ -21,13 +21,11 @@ class ScriptController extends Controller
     public function getExternalUrl(Request $request, $encodedUrl)
     {
     	return $this->cacheResponse($request, function() use ($encodedUrl, $request) {
-            // dd($_SERVER);
             $encodedUrl = str_replace('_', '/', $encodedUrl);
     		$url = base64_decode($encodedUrl);
     		$contents = $this->getExternalUrlContents($url);
             $contentType = $request->get('content-type', 'application/javascript');
-            $S = $_SERVER;
-            return response($contents)->header('location', "{$S['HTTP_X_FORWARDED_PROTO']}://{$S['HTTP_HOST']}{$S['REQUEST_URI']}");
+            return response($contents)->header('location', $contentType);
     	});
     }
 
@@ -46,12 +44,6 @@ class ScriptController extends Controller
     private function getExternalUrlContents($url) {
     	$client = new Client;
     	$res = $client->get($url);
-        // dd([
-        //     'url' => parse_url($url),
-        //     'res' => $res,
-        //     'body' => $res->getBody(),
-        //     'contents' => $res->getBody()->getContents()
-        // ]);
     	return $res->getBody()->getContents();
     }
 
