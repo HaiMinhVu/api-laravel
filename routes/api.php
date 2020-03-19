@@ -43,6 +43,12 @@ $router->group(['prefix' => 'products'], function() use ($router) {
     $router->post('netsuite', 'NetsuiteProductController@massUpdate');
 });
 
+// Route::resource('script', 'ScriptController')->only(['index', 'show']);
+Route::get('script/{url}', 'ScriptController@getUrl');
+Route::get('item/status/{id}', 'ScriptController@getStatus');
+Route::get('external/cache', 'ScriptController@getExternalUrlFromParam');
+Route::get('external/cache/{encodedUrl}', 'ScriptController@getExternalUrl');
+
 Route::resource('slider', 'SliderController')->only(['index', 'show']);
 // Route::get('dealers', 'DealerController@index');
 Route::apiResource('navigation', 'NavController')->only(['index', 'show']);
