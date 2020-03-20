@@ -24,8 +24,7 @@ class ScriptController extends Controller
             $encodedUrl = str_replace('_', '/', $encodedUrl);
     		$url = base64_decode($encodedUrl);
     		$contents = $this->getExternalUrlContents($url);
-            $contentType = $request->get('content-type', 'application/javascript');
-            return response($contents)->header('location', $contentType);
+            return response($contents);
     	});
     }
 
@@ -35,7 +34,7 @@ class ScriptController extends Controller
             return $this->cacheResponse($request, function() use ($encodedUrl) {
                 $url = base64_decode($encodedUrl);
                 $contents = $this->getExternalUrlContents($url);
-                return response($contents)->header('Content-Type', 'application/javascript');
+                return response($contents);
             });
         }
         return null;
