@@ -46,8 +46,11 @@ $router->group(['prefix' => 'products'], function() use ($router) {
 // Route::resource('script', 'ScriptController')->only(['index', 'show']);
 Route::get('script/{url}', 'ScriptController@getUrl');
 Route::get('item/status/{id}', 'ScriptController@getStatus');
-Route::get('external/cache', 'ScriptController@getExternalUrlFromParam');
-Route::get('external/cache/{encodedUrl}', 'ScriptController@getExternalUrl');
+
+$router->group(['prefix' => 'external', 'middleware' => ['cachable.resource']], function() use ($router)  {
+    $router->get('cache', 'ScriptController@getExternalUrlFromParam');
+    $router->get('cache/{encodedUrl}', 'ScriptController@getExternalUrl');
+});
 
 Route::resource('slider', 'SliderController')->only(['index', 'show']);
 // Route::get('dealers', 'DealerController@index');
