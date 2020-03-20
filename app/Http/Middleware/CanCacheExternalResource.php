@@ -42,7 +42,7 @@ class CanCacheExternalResource
     }
 
     /**
-     * Check if hostname is allowed.
+     * Set hostname.
      *
      * @return void
      */
