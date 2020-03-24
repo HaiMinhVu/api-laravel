@@ -14,7 +14,9 @@ class FeaturedProduct extends Model
 
     public function featuredProducts()
     {
-        return $this->hasMany(FeaturedProduct::class, 'pid')->whereHas('product');
+        return $this->hasMany(FeaturedProduct::class, 'pid')->whereHas('product', function($q){
+            $q->active();
+        });
     }
 
     public function parent()
