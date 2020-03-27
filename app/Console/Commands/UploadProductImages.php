@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use App\Models\{FeaturedProduct, Product, ProductImage};
+use App\Models\{FeaturedProduct, FileManager, Product, ProductImage};
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 use Aws\S3\ObjectUploader;
@@ -20,6 +20,7 @@ class UploadProductImages extends Command
 {
     const DEFAULT_MANUFACTURER = 'pulsar';
     const TMP_DIRECTORY = 'tmp';
+    const WITH_RELATIONS = ['images', 'reticles'];
 
     private $manufacturer;
     private $client;
@@ -30,7 +31,7 @@ class UploadProductImages extends Command
      *
      * @var string
      */
-    protected $signature = "upload:product-images {--manufacturer= : Upload by manufacturer} {--sku=* : Upload by sku(s)} {--featured-id= : Upload by featured id}";
+    protected $signature = "upload:product-images {--manufacturer= : Upload by manufacturer} {--sku=* : Upload by sku(s)} {--featured-id= : Upload by featured id} {--nsid=* : Upload by product nsid(s)}";
 
     /**
      * The console command description.
@@ -63,19 +64,32 @@ class UploadProductImages extends Command
      */
     public function handle()
     {
+       $this->uploadByType();
+    }
+
+    private function uploadByType()
+    {
         $skus = $this->option('sku');
         if(count($skus) > 0) {
             $this->uploadBySkus($skus);
         } else if($featuredId = $this->option('featured-id')) {
             $this->uploadByFeaturedId($featuredId);
+        } else if($nsids = $this->option('nsid')) {
+            $this->uploadByNSID($nsids);
         } else {
             $this->uploadByManufacturer();
         }
     }
 
+    private function uploadByNSID($nsids)
+    {
+        $products = Product::withoutGlobalScopes()->with(self::WITH_RELATIONS)->where('nsid', $this->option('nsid'))->get();
+        $this->uploadProductImages($products);
+    }
+
     private function uploadBySkus($skus)
     {
-        $products = Product::whereIn('sku', $skus)->with('images')->get();
+        $products = Product::withoutGlobalScopes()->whereIn('sku', $skus)->with(self::WITH_RELATIONS)->get();
         $this->uploadProductImages($products);
     }
 
@@ -91,64 +105,33 @@ class UploadProductImages extends Command
     private function uploadByManufacturer()
     {
         $this->setManufacturer();
-        $products = Product::active()->byManufacturer($this->manufacturer)->with('images')->get();
+        $products = Product::active()->byManufacturer($this->manufacturer)->with(self::WITH_RELATIONS)->get();
         $this->uploadProductImages($products);
     }
 
     private function uploadProductImages($products)
     {
         $products->map(function($product){
-            $response = $product->mainImage->syncWithS3();
-            $this->parseInfo($response);
+            $this->sync($product->mainImage);
 
-            $product->images->map(function($image){
+            $images = $product->images->merge($product->reticles);
+
+            $images->map(function($image){
                 if($image->fileManager()->exists()) {
-                    $response = $image->fileManager->syncWithS3();
-                    $this->parseInfo($response);
+                    $this->sync($image->fileManager);
                 }
             });
         });
     }
 
-    private function parseInfo($response)
+    private function sync(FileManager $fileManagerModel)
     {
-        $this->info(PHP_EOL."{$response->filename} - {$response->status}");
-        // $this->info("File Name: {$response->filename}".PHP_EOL);
-        // $this->info("Success: {$response->success}".PHP_EOL);
-        // $this->info("Status: {$response->status}".PHP_EOL);
-    }
-
-    private function uploadProductImage($fileName, $fileUrl)
-    {
-        if(!$this->doesFileExistInS3($fileName)) {
-          try {
-              $contents = file_get_contents($fileUrl);
-              $this->uploadFile($fileName, $contents);
-              $this->info("Uploaded file: {$fileName}");
-          } catch(\Exception $e) {
-              $this->error("Failed to upload file: {$fileName}");
-          }
+        try {
+            $response = $fileManagerModel->syncWithS3();
+            $this->info("{$response->filename} - {$response->status}");
+        } catch(\Exception $e) {
+            $this->error($e->getMessage());
         }
-    }
-
-    private function doesFileExistInS3($key) {
-        return $this->client->doesObjectExist(config('services.aws.bucket'), $key);
-    }
-
-    private function s3FileName($filePath)
-    {
-        return "{$this->manufacturer}/{$filePath}";
-    }
-
-    private function uploadFile($key, $source)
-    {
-        $uploader = new ObjectUploader(
-            $this->client,
-            $this->s3Bucket,
-            $key,
-            $source
-        );
-        return $uploader->upload();
     }
 
 }

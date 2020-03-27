@@ -14,7 +14,10 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\UploadProductImages::class,
-        Commands\UploadSliderImages::class
+        Commands\UploadSliderImages::class,
+        Commands\CacheRoutes::class,
+        Commands\UploadCategoryImages::class,
+        Commands\UploadFeaturedImages::class
     ];
 
     /**
