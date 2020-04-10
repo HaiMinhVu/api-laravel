@@ -23,9 +23,9 @@ class CreateFormFieldSelectedOptionsTable extends Migration
         Schema::connection('cms')->create($this->tableName, function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('form_field_submission_id')->unsigned();
-            $table->bigInteger('form_field_options_id')->unsigned();
+            $table->bigInteger('form_field_option_id')->unsigned();
             $table->index("form_field_submission_id");
-            $table->index("form_field_options_id");
+            $table->index("form_field_option_id");
         });
 
         Schema::connection('cms')->table($this->tableName, function (Blueprint $table) {
@@ -34,7 +34,7 @@ class CreateFormFieldSelectedOptionsTable extends Migration
                 ->onDelete('no action')
                 ->onUpdate('no action');
 
-            $table->foreign('form_field_options_id')
+            $table->foreign('form_field_option_id')
                 ->references('id')->on('form_field_options')
                 ->onDelete('no action')
                 ->onUpdate('no action');

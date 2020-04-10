@@ -23,6 +23,7 @@ class CreateFormFieldOptionsTable extends Migration
         Schema::connection('cms')->create($this->tableName, function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('value');
             $table->bigInteger('form_field_id')->unsigned();
             $table->index('form_field_id');
         });
