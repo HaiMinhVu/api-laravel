@@ -59,7 +59,6 @@ class NetsuiteProduct extends Model
             self::updateOrCreate(['nsid' => $data['nsid']], $data);
             return true;
         } catch(\Exception $e) {
-            Log::debug($e->getMessage());
             return false;
         }
     }
