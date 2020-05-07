@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\NetsuiteProduct;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Log;
 
 class NetsuiteProductController extends Controller
 {
