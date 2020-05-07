@@ -59,7 +59,6 @@ class NetsuiteProduct extends Model
             self::updateOrCreate(['nsid' => $data['nsid']], $data);
             return true;
         } catch(\Exception $e) {
-            // return $e->getMessage();
             return false;
         }
     }
@@ -85,7 +84,7 @@ class NetsuiteProduct extends Model
             "map" => $pricing['map'] ?? 0,
             "total_quantity_on_hand" => $data['quantityOnHand'] ?? 0,
             "taxable" => $data['isTaxable'] ? "Yes" : "No",
-            "weight" => $data['weight'],
+            "weight" => $data['weight'] ?? 0.00,
             "weight_units" => str_replace('_', '', $data['weightUnit']),
             "authdealerprice" => $pricing['authorizedDealer'] ?? 0,
             "buyinggroupprice" => $pricing['buyingGroup'] ?? 0,
@@ -104,7 +103,10 @@ class NetsuiteProduct extends Model
 
     private static function parseTimeV1($timeString) 
     {
-        return Carbon::parse($timeString)->setTimezone(config('app.timezone'))->format(self::NS_PRODUCT_DATEFORMAT);
+        if($timeString) {
+            return Carbon::parse($timeString)->setTimezone(config('app.timezone'))->format(self::NS_PRODUCT_DATEFORMAT);
+        }
+        return '';
     }
 
 }
