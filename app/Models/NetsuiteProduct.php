@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
-use Log;
 
 class NetsuiteProduct extends Model
 {
@@ -58,9 +57,6 @@ class NetsuiteProduct extends Model
         try {
             $data = self::transformRemoteDataV1($data);
             self::updateOrCreate(['nsid' => $data['nsid']], $data);
-            if($data['sku'] == 'PL77423') {
-                Log::debug(print_r([['nsid' => $data['nsid']], $data], true));
-            }
             return true;
         } catch(\Exception $e) {
             Log::debug($e->getMessage());
