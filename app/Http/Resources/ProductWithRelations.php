@@ -43,7 +43,8 @@ class ProductWithRelations extends Product
         $downloads = optional(collect($this->manuals)->merge($this->specSheets))->map(function($download){
             return [
                 'name' => $download->file_name,
-                'url' => $download->url()
+                'url' => $download->url(),
+                'remote_path' => $download->s3FilePath()
             ];
         });
 
