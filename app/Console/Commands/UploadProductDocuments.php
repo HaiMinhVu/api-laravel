@@ -75,14 +75,8 @@ class UploadProductDocuments extends Command
     private function uploadProductDocuments($products)
     {
         $products->map(function($product){
-            // if($product->manuals()->count() > 0 && $product->specSheets()->count() > 0) {
-            //     // $manuals = collect($product->manuals;
-            //     // $specSheets = $product->specSheets()->get();
-                $files = collect($product->manuals)->merge(collect($product->specSheets));
-            //     dd($merged);
-            //     $files = $product->specSheets->merge($product->manuals);
-            //     dd([$product->manuals()->count(), $product->specSheets()->count(), $files->count()]);
-            // }
+            $files = collect($product->manuals)->merge(collect($product->specSheets));
+
             $files->map(function($file){
                 $this->sync($file);
             });
