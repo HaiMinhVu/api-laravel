@@ -7,6 +7,7 @@ class FileType extends BaseModel
 	const IMAGE = 'Image';
 	const SPEC_SHEET = 'Spec Sheet';
 	const MANUALS = 'Manual';
+	const FORM_UPLOAD = 'Form Upload';
 
     /**
      * The attributes that are mass assignable.
@@ -39,5 +40,10 @@ class FileType extends BaseModel
 	public function scopeManuals($query)
 	{
 		return $query->where('name', self::MANUAL);
+	}
+
+	public function scopeFormUpload($query)
+	{
+		return $query->where('name', self::FORM_UPLOAD);
 	}
 }

@@ -32,13 +32,17 @@ class FileManager extends Model
         return self::where('ID', 0)->first()->url();
     }
 
-    public function filePath()
+    public function filePath($urlencode = false)
     {
         $filePath = '';
         if($this->sitePath()->exists()) {
             $filePath = $this->sitePath->description;
         }
-        return $filePath.$this->file_name;
+        $fileName = $this->file_name;
+        if($urlencode) {
+            $fileName = rawurlencode($fileName);
+        }
+        return $filePath.$fileName;
     }
 
     public function s3FilePath()
@@ -53,7 +57,7 @@ class FileManager extends Model
     public function url()
     {
         if($this->siteList()->exists()) {
-            $filePath = $this->filePath();
+            $filePath = $this->filePath(true);
             $url = $this->getPublicUrl();
             return "{$url}{$filePath}";
         }

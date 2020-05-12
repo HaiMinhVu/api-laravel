@@ -6,13 +6,20 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\V2\FormSubmissionRequest;
 use App\Models\V2\{
+    Brand,
 	FormSubmission,
 	FormFieldSubmission,
-	FormFieldSelectedOption
+	FormFieldSelectedOption,
+    FormFieldValue
 };
 
 class SubmissionController extends Controller
 {
+    public function __construct() 
+    {
+        $this->middleware('api')->except('store');
+    }
+
       /**
      * Display a listing of the resource.
      *
@@ -31,24 +38,37 @@ class SubmissionController extends Controller
      */
     public function store(FormSubmissionRequest $request)
     {
-		if($validated = $request->validated()) {
+		if($request->validated()) {
+            $data = $request->all();
+            $brand = Brand::where('slug', $data['brand'])->first();
 
 			$formSubmission = new FormSubmission;
-			$formSubmission->form_id = $validated['form_id'];	
+			$formSubmission->form_id = $data['form_id'];	
+            $formSubmission->brand_id = ($brand) ? $brand->id : null;
 			$formSubmission->save();	
 
-			foreach($validated['fields'] as $field) {
-				$formFieldSubmission = new FormFieldSubmission;
-				$formFieldSubmission->form_submission_id = $formSubmission->id;
-				$formFieldSubmission->form_field_id = $field['id'];
-				$formFieldSubmission->name = '';
-				$formFieldSubmission->save();
-				if(array_key_exists('selected_option_id', $field)) {
-					$formFieldSelectedOption = new FormFieldSelectedOption;
-					$formFieldSelectedOption->form_field_submission_id = $formFieldSubmission->id;
-					$formFieldSelectedOption->form_field_option_id = $field['selected_option_id'];
-					$formFieldSelectedOption->save();
-				}
+			foreach($data['fields'] as $field) {
+    				$formFieldSubmission = new FormFieldSubmission;
+    				$formFieldSubmission->form_submission_id = $formSubmission->id;
+    				$formFieldSubmission->form_field_id = (int) $field['id'];
+    				$formFieldSubmission->name = '';
+    				$formFieldSubmission->save();
+    				if(array_key_exists('selected_option_id', $field)) {
+    					$formFieldSelectedOption = new FormFieldSelectedOption;
+    					$formFieldSelectedOption->form_field_submission_id = $formFieldSubmission->id;
+    					$formFieldSelectedOption->form_field_option_id = (int) $field['selected_option_id'];
+    					$formFieldSelectedOption->save();
+    				}
+                    if(array_key_exists('value', $field)) {
+                        $formFieldValue = new FormFieldValue;
+                        $formFieldValue->name = $field['value'] ?? '';
+                        $formFieldValue->form_field_id = (int) $field['id'];
+                        $formFieldValue->form_field_submission_id = $formFieldSubmission->id;
+                        $formFieldValue->save();
+                    }
+                    if(array_key_exists('file', $field)) {
+                        
+                    }
 			}
 
 			return $formSubmission->fresh();
@@ -62,9 +82,9 @@ class SubmissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return Form::with(['fields.options'])->find($id);
+        return FormSubmission::find($id);
     }
 
     /**

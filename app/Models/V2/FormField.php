@@ -18,6 +18,11 @@ class FormField extends BaseModel
     	return $this->belongsTo(Form::class);
     }
 
+    public function file()
+    {
+        // return $this->
+    }
+
     public function options()
     {
     	return $this->hasMany(FormFieldOption::class);
@@ -30,7 +35,7 @@ class FormField extends BaseModel
 
     public function type()
     {
-    	return $this->belongsTo(FormFieldType::class);
+    	return $this->belongsTo(FormFieldType::class, 'form_field_type_id');
     }
 
     public function values()
