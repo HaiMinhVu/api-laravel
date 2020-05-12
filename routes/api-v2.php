@@ -38,6 +38,6 @@ use Illuminate\Http\Request;
 // });
 
 $router->group(['namespace' => 'Form'], function() use ($router) {
-    $router->apiResource('form', 'FormController');
-    $router->apiResource('form-submission', 'SubmissionController');
+    $router->apiResource('form', 'FormController')->only(['index', 'store', 'show']);
+    $router->apiResource('form-submission', 'SubmissionController')->only(['index', 'store', 'show']);
 });

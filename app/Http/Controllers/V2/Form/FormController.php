@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V2\Form;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\V2\Form as FormResource;
 use App\Models\V2\{
     Form,
     FormField,
@@ -13,6 +14,11 @@ use App\Models\V2\{
 
 class FormController extends Controller
 {
+    public function __construct() 
+    {
+        $this->middleware('api')->except('show');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,12 +42,12 @@ class FormController extends Controller
         if($request->has('fields')) {
             foreach($data['fields'] as $field) {
                 $type = FormFieldType::getByName($field['type']);
-                // dd($field);
                 $formField = new FormField;
                 $formField->name = $field['name'];
-                $formField->description = '';
+                $formField->description = $field['description'];
+                $formField->required = array_key_exists('required', $field) ? $field['required'] : 0;
                 $formField->form_id = $form->id;
-                $formField->form_field_type_id = $type->id ?? 4;
+                $formField->form_field_type_id = $type->id ?? 1;
                 $formField->save();
                 if(array_key_exists('options', $field)) {
                     foreach($field['options'] as $option) {
@@ -52,9 +58,6 @@ class FormController extends Controller
                         $formFieldOption->save();
                     }
                 }
-
-                // $formField = FormField::create(['name' => $field['name'], 'description' => '']);
-                // $form->fields()->attach($formField);
             }
         }
         return $form->load(['fields.options']);
@@ -68,7 +71,14 @@ class FormController extends Controller
      */
     public function show($id)
     {
-        return Form::with(['fields.options'])->find($id);
+        $form = Form::with(['fields.options', 'fields.type']);
+        if(is_numeric($id)) {
+            $form = $form->find($id);
+        } else {
+            $form = $form->where('name', $id)->latest()->first();
+        }
+        $data = (new FormResource($form))->jsonSerialize();
+        return response()->json(['data' => $data]);
     }
 
     /**

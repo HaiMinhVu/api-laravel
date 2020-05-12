@@ -2,10 +2,10 @@
 
 namespace App\Models\V2;
 
-use Illuminate\Database\Eloquent\Model;
-
-class FormFieldValue extends Model
+class FormFieldValue extends BaseModel
 {
+	public $timestamps = false;
+
     public function field()
     {
     	return $this->belongsTo(FormField::class);

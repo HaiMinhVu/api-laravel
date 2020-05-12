@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 
 class FormFieldTypeSeeder extends Seeder
 {
-	const DEFAULT_FORM_FIELD_TYPES = ['text', 'select', 'textarea', 'radio', 'checkbox'];
+	const DEFAULT_FORM_FIELD_TYPES = ['text', 'select', 'textarea', 'radio', 'checkbox', 'file'];
     /**
      * Run the database seeds.
      *
