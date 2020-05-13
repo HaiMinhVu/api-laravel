@@ -8,8 +8,10 @@ use App\Http\Requests\V2\FormSubmissionRequest;
 use App\Models\V2\{
     Brand,
 	FormSubmission,
+    FormField,
 	FormFieldSubmission,
 	FormFieldSelectedOption,
+    FormFieldType,
     FormFieldValue
 };
 
@@ -48,27 +50,30 @@ class SubmissionController extends Controller
 			$formSubmission->save();	
 
 			foreach($data['fields'] as $field) {
-    				$formFieldSubmission = new FormFieldSubmission;
-    				$formFieldSubmission->form_submission_id = $formSubmission->id;
-    				$formFieldSubmission->form_field_id = (int) $field['id'];
-    				$formFieldSubmission->name = '';
-    				$formFieldSubmission->save();
-    				if(array_key_exists('selected_option_id', $field)) {
-    					$formFieldSelectedOption = new FormFieldSelectedOption;
-    					$formFieldSelectedOption->form_field_submission_id = $formFieldSubmission->id;
-    					$formFieldSelectedOption->form_field_option_id = (int) $field['selected_option_id'];
-    					$formFieldSelectedOption->save();
-    				}
-                    if(array_key_exists('value', $field)) {
-                        $formFieldValue = new FormFieldValue;
-                        $formFieldValue->name = $field['value'] ?? '';
-                        $formFieldValue->form_field_id = (int) $field['id'];
-                        $formFieldValue->form_field_submission_id = $formFieldSubmission->id;
-                        $formFieldValue->save();
-                    }
-                    if(array_key_exists('file', $field)) {
-                        
-                    }
+
+                // TODO: refactor
+                $type = FormField::getTypeById($field['id']);
+
+				$formFieldSubmission = new FormFieldSubmission;
+				$formFieldSubmission->form_submission_id = $formSubmission->id;
+				$formFieldSubmission->form_field_id = (int) $field['id'];
+				$formFieldSubmission->name = '';
+				$formFieldSubmission->save();
+				if(in_array($type, FormFieldType::SELECTABLE)) {
+					$formFieldSelectedOption = new FormFieldSelectedOption;
+					$formFieldSelectedOption->form_field_submission_id = $formFieldSubmission->id;
+					$formFieldSelectedOption->form_field_option_id = (int) $field['value'];
+					$formFieldSelectedOption->save();
+				} else {
+                    $formFieldValue = new FormFieldValue;
+                    $formFieldValue->name = $field['value'] ?? '';
+                    $formFieldValue->form_field_id = (int) $field['id'];
+                    $formFieldValue->form_field_submission_id = $formFieldSubmission->id;
+                    $formFieldValue->save();
+                }
+                if(array_key_exists('file', $field)) {
+                    
+                }
 			}
 
 			return $formSubmission->fresh();
