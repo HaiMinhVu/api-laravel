@@ -20,6 +20,12 @@ class FormSubmissionRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
+        $test = collect($this->request->all()['fields'])->map(function($field){
+            $data = (object)[];
+            $data->model = FormField::find($field['id']);
+            $data->field = $field;
+            return $data;
+        });
         $this->fields = Form::with('fields.type')->find($this->form_id)->fields;
     }
 
@@ -58,7 +64,7 @@ class FormSubmissionRequest extends FormRequest
     {
         if($field->required) {
             $this->rules["fields.{$idx}.id"] = "integer|required";
-            $this->rules["fields.{$idx}.{$this->attributeByType($field)}"] = "required";
+            $this->rules["fields.{$idx}.value"] = "required";
         }
     }
 

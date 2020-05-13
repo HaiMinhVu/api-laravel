@@ -42,4 +42,13 @@ class FormField extends BaseModel
     {
     	return $this->hasMany(FormFieldValue::class);
     }
+
+    public static function getTypeById(?int $id) : ?string 
+    {
+        try {
+            return self::with('type')->find($id)->type->name;
+        } catch(\Exception $e) {
+            return null;
+        }
+    }
 }

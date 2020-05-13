@@ -4,6 +4,7 @@ namespace App\Models\V2;
 
 class FormFieldType extends BaseModel
 {
+    const SELECTABLE = ['radio', 'select', 'checkbox'];
     /**
      * The attributes that are mass assignable.
      *
