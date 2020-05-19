@@ -140,6 +140,11 @@ class Product extends Model
         return $this->belongsTo(FileManager::class, 'main_img_id');
     }
 
+    public function reticles()
+    {
+        return $this->hasMany(ProductReticle::class);
+    }
+
     public function relatedProducts()
     {
         return $this->hasManyThrough(
