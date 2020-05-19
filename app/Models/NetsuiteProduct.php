@@ -43,11 +43,14 @@ class NetsuiteProduct extends Model
 
         return $query->where(function($q) use ($now) {
             $q->where(function($q) use ($now){
-                $q->whereNull('enddate');
-                $q->where('startdate', '>=', $now);
+                $q->where(function($q) use ($now){
+                    $q->whereNull('enddate');
+                    $q->orWhere('enddate', '=', '');
+                });
+                $q->where('startdate', '<=', $now);
             })->orWhere(function($q) use ($now) {
-                $q->where('startdate', '>=', $now);
-                $q->where('enddate', '<=', $now);
+                $q->where('startdate', '<=', $now);
+                $q->where('enddate', '>=', $now);
             });
         });
     }
