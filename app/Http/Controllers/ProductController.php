@@ -30,6 +30,9 @@ class ProductController extends Controller
     public function show(Request $request, $manufacturerId, $nsid)
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId, $nsid) { 
+            $product = Product::where('nsid', $nsid)->with('netsuiteProduct')->first();
+            // return Product::byManufacturer($manufacturerId)->get();
+            return response()->json(['data' => $product]);
             $product = Product::byManufacturer($manufacturerId)->where('nsid', $nsid)->withAllRelations()->first();
             $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
             return response()->json(['data' => $data]);
@@ -40,6 +43,7 @@ class ProductController extends Controller
     {
         $product->update($request->all());
     }
+
 
     public function delete(Request $request, $product)
     {
