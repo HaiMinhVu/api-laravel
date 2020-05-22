@@ -42,12 +42,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        $this->mapApiCrudRoutes();
         $this->mapApiRoutes();
-
         $this->mapWebRoutes();
-
         $this->mapApiV2Routes();
-
         $this->mapFileRoutes();
     }
 
@@ -81,6 +79,21 @@ class RouteServiceProvider extends ServiceProvider
     }
 
     /**
+     * Define the "crud" v1 routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapApiCrudRoutes()
+    {
+        Route::prefix('v1/crud')
+             ->middleware('api')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/crud.php'));
+    }
+
+    /**
      * Define the "api" v2 routes for the application.
      *
      * These routes are typically stateless.
@@ -109,4 +122,5 @@ class RouteServiceProvider extends ServiceProvider
              ->namespace($this->namespace)
              ->group(base_path('routes/file.php'));
     }
+
 }
