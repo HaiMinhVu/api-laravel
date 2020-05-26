@@ -19,7 +19,9 @@ class CategoryController extends Controller
     public function index(Request $request, $manufacturerId)
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId) { 
-            $ProductCategories = ProductCategory::topLevelCategoriesByManufacturer($manufacturerId)->whereHas('products')->get();
+            $ProductCategories = ProductCategory::topLevelCategoriesByManufacturer($manufacturerId)->whereHas('products', function($q){
+                $q->active();
+            })->get();
             $data = (new CategoryCollectionResource($ProductCategories))->jsonSerialize();
             return response()->json(['data' => $data]);
         });
