@@ -39,15 +39,15 @@ class NetsuiteProduct extends Model
 
     public function scopeCurrent($query)
     {
-        $now = (Carbon::now())->format('m/d/Y');
+        $now = Carbon::now();
 
         return $query->where(function($q) use ($now) {
             $q->where(function($q) use ($now){
-                $q->whereNull('enddate');
-                $q->where('startdate', '>=', $now);
+                $q->whereRaw('enddate = ""');
+                $q->whereRaw("DATE_FORMAT(STR_TO_DATE(startdate, '%m/%d/%Y'), '%Y-%m-%d') <= ?", [$now]);
             })->orWhere(function($q) use ($now) {
-                $q->where('startdate', '>=', $now);
-                $q->where('enddate', '<=', $now);
+                $q->whereRaw("DATE_FORMAT(STR_TO_DATE(startdate, '%m/%d/%Y'), '%Y-%m-%d') <= ?", [$now]);
+                $q->whereRaw("DATE_FORMAT(STR_TO_DATE(enddate, '%m/%d/%Y'), '%Y-%m-%d') >= ?", [$now]);
             });
         });
     }
