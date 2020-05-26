@@ -21,7 +21,8 @@ return [
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_ACCESS_KEY_SECRET')
         ],
-        'bucket' => env('AWS_BUCKET')
+        'bucket' => env('AWS_BUCKET'),
+        'image_cdn' => env('AWS_IMAGE_RESIZER_URL')
     ],
 
     'mailgun' => [

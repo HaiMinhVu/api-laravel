@@ -55,4 +55,26 @@ class S3
         return $uploader->upload();
     }
 
+    public function imageLink($fileKey, $imageWidth = null, $additionalOptions = []){
+        $options = [
+            "bucket" => config('services.aws.bucket'),
+            "key" => $fileKey,
+            'edits' => [
+                'resize' => []
+            ]
+        ];
+        if($imageWidth) {
+            $options['edits']['resize'] = [
+                    'width' => $imageWidth,
+                    'fit' => 'contain'
+                
+            ];
+        }
+        // $options['edits']['resize'] = array_merge($options['edits']['resize'], $additionalOptions);
+        // dd($options);
+        $options = base64_encode(json_encode($options));
+        $imageCDN = config('services.aws.image_cdn');
+        return "{$imageCDN}/{$options}";
+    }
+
 }
