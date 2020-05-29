@@ -18,7 +18,7 @@ class FileListItem extends JsonResource
      * @param  mixed  $resource
      * @return void
      */
-    public function __construct($resource, $imageWidth = 100)
+    public function __construct($resource, $imageWidth = 200)
     {
         parent::__construct($resource);
         $this->resource = $resource;
@@ -33,20 +33,26 @@ class FileListItem extends JsonResource
      */
     public function toArray($request)
     {
-        try {
-            $s3FilePath = $this->s3FilePath();
-            $height = $this->imageWidth;
-            $imageUrl = S3::imageLink($s3FilePath, $this->imageWidth, [
-                'height' => $height,
-                'background' => [
-                    'r' => 255,
-                    'g' => 255,
-                    'b' => 255,
-                    'alpha' => 1
+        if($isImage = $this->resource->isImage()) {
+            try {
+                $s3FilePath = $this->resource->s3FilePath();
+                $height = $this->imageWidth;
+                $url = S3::imageLink($s3FilePath, $this->imageWidth, 
+                    [
+                    'height' => $height,
+                    'background' => [
+                        'r' => 255,
+                        'g' => 255,
+                        'b' => 255,
+                        'alpha' => 1
+                    ]
                 ]
-            ]);
-        } catch(\Exception $e) {
-            $imageUrl = null;
+            );
+            } catch(\Exception $e) {
+                $url = null;
+            }
+        } else {
+            $url = $this->resource->getS3Url();
         }
 
         return [
@@ -54,7 +60,9 @@ class FileListItem extends JsonResource
             'file_name' => $this->file_name,
             'display_name' => $this->display_name,
             'description' => $this->description,
-            'image' => $imageUrl
+            'brand' => $this->resource->siteList->label,
+            'url' => $url,
+            'is_image' => $isImage
         ];
     }
 }
