@@ -101,8 +101,6 @@ class FileController extends Controller
             }
         }, ['description', 'display_name']);
 
-        // dd($file);
-
         if($file->isDirty()) {
             $file->save();
         }

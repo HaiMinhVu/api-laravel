@@ -186,22 +186,35 @@ class Product extends Model
         return $this->hasOne(FeaturedProduct::class);
     }
 
-    // Data is dirty so must use weird functionality in the meantime
-    public function mainParent()
+    public function syncReticles($ids = [])
     {
-
+        if(count($ids) > 0) {
+            $productReticles = collect($ids)->map(function($id, $idx) {
+                $productReticle = new ProductReticle;
+                $productReticle->file_id = $id;
+                $productReticle->product_id = $this->id;
+                $productReticle->reticle_order = $idx+1;
+                $productReticle->save();
+                return $productReticle;
+            });
+            return $productReticles;
+        }
     }
 
-    // public function images()
-    // {
-    //     return $this->hasManyThrough(
-    //         ProductImageList::class,
-    //         ProductImage::class,
-    //         'product_id',
-    //         'id',
-    //         'id',
-    //         'img_id'
-    //     );
-    // }
+    public function syncImages($ids = []) 
+    {
+        if(count($ids) > 0) {
+            $productImages = collect($ids)->map(function($id, $idx) {
+                $productImage = new ProductImage;
+                $productImage->file_id = $id;
+                $productImage->img_id = $id;
+                $productImage->product_id = $this->id;
+                $productImage->img_order = $idx+1;
+                $productImage->save();
+                return $productImage;
+            });
+            return $productImages;
+        }
+    }
 
 }
