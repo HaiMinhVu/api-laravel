@@ -12,4 +12,9 @@ class SiteList extends Model
 
     public $timestamps = false;
 
+
+    public function files()
+    {
+    	return $this->hasMany(FileManager::class, 'site_id');
+    }
 }

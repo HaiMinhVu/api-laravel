@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FileManager;
 use Illuminate\Http\Request;
 use App\Http\Resources\Crud\FileListItem;
+use App\Http\Requests\FileStoreRequest;
 
 class FileController extends Controller
 {
@@ -16,9 +17,51 @@ class FileController extends Controller
      */
     public function index(Request $request)
     {
+        if($request->has('ids')) {
+            return $this->showByIds($request->ids);
+        } else {
+            return $this->showPaginatedData($request);
+        }
+    }
+
+    private function showPaginatedData(Request $request)
+    {
         $limit = $request->has('limit') ? min($request->limit, 100) : 10;
-        $items = FileManager::limit($limit)->orderBy('ID', 'desc')->get();
-        return FileListItem::collection($items);
+        $query = FileManager::existsOnS3()->orderBy('ID', 'desc');
+
+        if($request->has('type')) {
+            $query->byType($request->type);
+        }
+
+        if($request->has('search')) {
+            $query->fuzzyMatch($request->search);
+        }
+
+        if($request->has('brand')) {
+            $query->byBrand($request->brand);
+        }
+
+        $results = $query->paginate($limit);
+
+        $items = $results->map(function($item){
+            return new FileListItem($item, 200);
+        });
+
+        return response()->json([
+            'pages' => $results->lastPage(),
+            'current_page' => $results->currentPage(),
+            'total' => $results->total(),
+            'data' => $items
+        ]);
+    }
+
+    private function showByIds(array $ids)
+    {
+        $results = FileManager::whereIn('ID', $ids)->get();
+        $items = $results->map(function($item){
+            return new FileListItem($item, 200);
+        });
+        return response()->json(['data' => $items]);
     }
 
     /**
@@ -29,7 +72,7 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return FileManager::handleNewUpload($request->file, $request->type, $request->brand);
     }
 
     /**
@@ -50,9 +93,18 @@ class FileController extends Controller
      * @param  \App\Models\FileManager  $fileManager
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, FileManager $fileManager)
+    public function update(Request $request, FileManager $file)
     {
-        //
+        array_map(function($key) use ($request, $file) {
+            if($request->has($key)) {
+                $file->$key = $request->$key;
+            }
+        }, ['description', 'display_name']);
+
+        if($file->isDirty()) {
+            $file->save();
+        }
+        return $file;
     }
 
     /**

@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
         Commands\CacheRoutes::class,
         Commands\UploadCategoryImages::class,
         Commands\UploadFeaturedImages::class,
-        Commands\UploadProductDocuments::class
+        Commands\UploadProductDocuments::class,
+        Commands\CheckIfExistsRemote::class
     ];
 
     /**
