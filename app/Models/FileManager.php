@@ -12,6 +12,7 @@ use S3;
 class FileManager extends Model
 {
     const DEFAULT_DIRECTORY = 'uncategorized';
+    const DEFAULT_IMAGE_ID = 16585;
 
      /**
      * The primary key associated with the table.
@@ -58,7 +59,7 @@ class FileManager extends Model
 
     public static function defaultImage()
     {
-        return self::where('ID', 0)->first()->url();
+        return self::where('ID', self::DEFAULT_IMAGE_ID)->first()->url();
     }
 
     public function filePath($urlencode = false)
@@ -90,7 +91,7 @@ class FileManager extends Model
         $s3FilePath = '';
         if($label = optional($this->siteList)->label) {
             $s3FilePath = Str::kebab($this->siteList->label).'/';
-        } 
+        }
         return $s3FilePath;
     }
 
@@ -121,27 +122,27 @@ class FileManager extends Model
 
     public function scopeImages($query)
     {
-        return $query->whereIn('site_folder_id', MasterList::IMAGE_IDS);  
+        return $query->whereIn('site_folder_id', MasterList::IMAGE_IDS);
     }
 
     public function scopeSpecSheets($query)
     {
-        return $query->whereIn('site_folder_id', MasterList::SPEC_SHEET_IDS);  
+        return $query->whereIn('site_folder_id', MasterList::SPEC_SHEET_IDS);
     }
 
     public function scopeProofOfPurchases($query)
     {
-        return $query->whereIn('site_folder_id', MasterList::PROOF_OF_PURCHASE_IDS);  
+        return $query->whereIn('site_folder_id', MasterList::PROOF_OF_PURCHASE_IDS);
     }
 
     public function scopeManuals($query)
     {
-        return $query->whereIn('site_folder_id', MasterList::MANUAL_IDS);  
+        return $query->whereIn('site_folder_id', MasterList::MANUAL_IDS);
     }
 
     public function scopeCatalogs($query)
     {
-        return $query->whereIn('site_folder_id', MasterList::CATALOG_IDS);  
+        return $query->whereIn('site_folder_id', MasterList::CATALOG_IDS);
     }
 
     public function scopeByType($query, $typeName = null)
@@ -171,14 +172,14 @@ class FileManager extends Model
         }
     }
 
-    public function scopeByBrand($query, $brand) 
+    public function scopeByBrand($query, $brand)
     {
         $query->whereHas('siteList', function($q) use ($brand) {
             $q->where('label', 'like', "%{$brand}%");
         });
     }
 
-    public static function handleNewUpload(UploadedFile $file, string $type, string $brand) : self 
+    public static function handleNewUpload(UploadedFile $file, string $type, string $brand) : self
     {
         $pathInfo = pathinfo($file->getClientOriginalName());
         $fileName = $pathInfo['basename'];
