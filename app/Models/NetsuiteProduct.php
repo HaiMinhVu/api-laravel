@@ -16,7 +16,7 @@ class NetsuiteProduct extends Model
     protected $primaryKey = 'nsid';
 
     protected $fillable = [
-        "nsid", "active_in_webstore", "inactive", "ns_product_category", "startdate", "enddate", 
+        "nsid", "active_in_webstore", "inactive", "ns_product_category", "startdate", "enddate",
         "sku", "featured_description", "UPC", "description", "ECCN", "CCATS", "online_price", "map",
         "total_quantity_on_hand","taxable","weight","weight_units","authdealerprice","buyinggroupprice",
         "dealerprice","dealerdistprice","disprice","dropshipprice","govprice", "msrp", "specials",
@@ -82,7 +82,7 @@ class NetsuiteProduct extends Model
             "CCATS" => $data['ccats'] ?? '',
             "online_price" => $pricing['onlinePrice'] ?? 0,
             "map" => $pricing['map'] ?? 0,
-            "total_quantity_on_hand" => $data['quantityOnHand'] ?? 0,
+            "total_quantity_on_hand" => $data['quantityAvailable'] ?? 0,
             "taxable" => $data['isTaxable'] ? "Yes" : "No",
             "weight" => $data['weight'] ?? 0.00,
             "weight_units" => str_replace('_', '', $data['weightUnit']),
@@ -101,7 +101,7 @@ class NetsuiteProduct extends Model
         ];
     }
 
-    private static function parseTimeV1($timeString) 
+    private static function parseTimeV1($timeString)
     {
         if($timeString) {
             return Carbon::parse($timeString)->setTimezone(config('app.timezone'))->format(self::NS_PRODUCT_DATEFORMAT);
