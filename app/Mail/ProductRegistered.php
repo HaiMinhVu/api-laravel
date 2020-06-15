@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\ProductRegistration;
+use App\Models\V2\FormSubmission;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -12,20 +12,22 @@ class ProductRegistered extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * The model instance.
+     * The FormSubmission associated with the product submission.
      *
-     * @var ProductRegistration
+     * @var FormSubmission
      */
-    public $productRegistration;
+    public $formSubmission;
+    public $logoUrl;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(ProductRegistration $productRegistration)
+    public function __construct(FormSubmission $formSubmission)
     {
-        $this->productRegistration = $productRegistration;
+        $this->formSubmission = $formSubmission;
+        $this->logoUrl = $this->formSubmission->brand->logoUrl();
     }
 
     /**
@@ -35,6 +37,13 @@ class ProductRegistered extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.product-registration')->with(['productRegistration', $this->productRegistration]);
+        return $this->to($this->formSubmission->getValueByLabel('email'))
+                    ->from(config('mail.from.address'), "No Reply at {$this->formSubmission->brand->name}")
+                    ->subject("{$this->formSubmission->brand->name} - Product Registration")
+                    ->view('emails.product-registration')
+                    ->with([
+                        'formSubmissions' => $this->formSubmission->getSimpleSubmissionData(),
+                        'brandLogoUrl' => $this->logoUrl
+                    ]);
     }
 }

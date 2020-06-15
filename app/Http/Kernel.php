@@ -42,6 +42,10 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ApiAuth::class
         ],
+
+        'file' => [
+            \App\Http\Middleware\RestrictViewableFileTypes::class
+        ]
     ];
 
     /**

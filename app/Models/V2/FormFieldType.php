@@ -5,6 +5,7 @@ namespace App\Models\V2;
 class FormFieldType extends BaseModel
 {
     const SELECTABLE = ['radio', 'select', 'checkbox'];
+    const FILE_TYPES = ['file'];
     /**
      * The attributes that are mass assignable.
      *
@@ -22,5 +23,15 @@ class FormFieldType extends BaseModel
     public static function getByName($name)
     {
         return self::where('name', $name)->first();
+    }
+
+    public function isFile()
+    {
+        return in_array($this->name, self::FILE_TYPES);
+    }
+
+    public function isSelectable()
+    {
+        return in_array($this->name, self::SELECTABLE);
     }
 }

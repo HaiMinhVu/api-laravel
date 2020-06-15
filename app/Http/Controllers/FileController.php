@@ -9,7 +9,7 @@ class FileController extends Controller
 {
 
 	const STORAGE_DISK = 's3';
-    
+
 	public function download(Request $request, string $key)
 	{
 		try {
@@ -21,7 +21,7 @@ class FileController extends Controller
 		}
 	}
 
-	public function stream(Request $request, string $key) 
+	public function stream(Request $request, string $key)
 	{
 		try {
 			return response()->make($this->getFromStorage($key), 200, [

@@ -20,9 +20,9 @@ class ApiAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        // if (!$this->authorized($request)) {
-        //     return response()->json(['message' => self::MESSAGE], self::CODE);
-        // }
+        if (!$this->authorized($request)) {
+            return response()->json(['message' => self::MESSAGE], self::CODE);
+        }
 
         return $next($request);
 
@@ -34,7 +34,7 @@ class ApiAuth
      * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
-    private function authorized(Request $request) 
+    private function authorized(Request $request)
     {
         return $request->header(self::HEADER_KEY) === config('auth.api_auth.token');
     }
