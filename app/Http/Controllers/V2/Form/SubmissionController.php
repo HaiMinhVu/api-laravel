@@ -102,6 +102,7 @@ class SubmissionController extends Controller
                     }
                 }
             }
+            sleep(1);
             $formSubmission->touch();
             return $formSubmission->fresh();
         }
