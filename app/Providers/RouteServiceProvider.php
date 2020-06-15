@@ -118,7 +118,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapFileRoutes()
     {
         Route::prefix('file')
-             ->middleware('api')
+             ->middleware('file')
              ->namespace($this->namespace)
              ->group(base_path('routes/file.php'));
     }

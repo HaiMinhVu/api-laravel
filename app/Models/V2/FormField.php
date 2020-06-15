@@ -38,12 +38,17 @@ class FormField extends BaseModel
     	return $this->belongsTo(FormFieldType::class, 'form_field_type_id');
     }
 
+    public function isFile()
+    {
+        return $this->type->isFile();
+    }
+
     public function values()
     {
     	return $this->hasMany(FormFieldValue::class);
     }
 
-    public static function getTypeById(?int $id) : ?string 
+    public static function getTypeById(?int $id) : ?string
     {
         try {
             return self::with('type')->find($id)->type->name;

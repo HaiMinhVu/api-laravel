@@ -8,11 +8,11 @@ class FormFieldSelectedOption extends BaseModel
 
     public function submission()
     {
-    	return $this->belongsTo(FormFieldSubmission::class);
+    	return $this->belongsTo(FormFieldSubmission::class, 'form_field_submission_id');
     }
 
     public function option()
     {
-    	return $this->belongsTo(FormFieldOption::class);
+    	return $this->belongsTo(FormFieldOption::class, 'form_field_option_id');
     }
 }

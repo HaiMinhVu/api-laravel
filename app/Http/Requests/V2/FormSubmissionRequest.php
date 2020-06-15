@@ -20,13 +20,16 @@ class FormSubmissionRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $test = collect($this->request->all()['fields'])->map(function($field){
-            $data = (object)[];
-            $data->model = FormField::find($field['id']);
-            $data->field = $field;
-            return $data;
-        });
         $this->fields = Form::with('fields.type')->find($this->form_id)->fields;
+
+        $fields = [
+            'fields' => collect($this->request->all()['fields'])->mapWithKeys(function($field, $id){
+                $data = json_decode($field, true);
+                return [$data['id'] => $data];
+            })->all()
+        ];
+
+        $this->merge($fields);
     }
 
     /**
@@ -37,7 +40,7 @@ class FormSubmissionRequest extends FormRequest
     public function rules()
     {
         $this->rules = [
-            "form_id" => "integer|required", 
+            "form_id" => "integer|required",
             "brand" => "string|required"
         ];
 
@@ -62,9 +65,16 @@ class FormSubmissionRequest extends FormRequest
 
     protected function addFieldRules(FormField $field, $idx)
     {
+        if($field->isFile()) {
+            $this->rules["fields.{$field->id}"] = "file";
+        }
         if($field->required) {
-            $this->rules["fields.{$idx}.id"] = "integer|required";
-            $this->rules["fields.{$idx}.value"] = "required";
+            if($field->isFile()) {
+                $this->rules["fields.{$field->id}"] = "file|required";
+            } else {
+                $this->rules["fields.{$field->id}.id"] = "integer|required";
+                $this->rules["fields.{$field->id}.value"] = "required";
+            }
         }
     }
 
