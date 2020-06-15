@@ -85,19 +85,21 @@ class SubmissionController extends Controller
                     $formFieldValue->save();
                 }
             }
-            foreach($data['files'] as $field_id => $file) {
-                if($file && $file != 'undefined') {
-                    $type = FormField::getTypeById($field_id);
+            if(array_key_exists('files', $data)) {
+                foreach($data['files'] as $field_id => $file) {
+                    if($file && $file != 'undefined') {
+                        $type = FormField::getTypeById($field_id);
 
-                    $formFieldSubmission = new FormFieldSubmission;
-                    $formFieldSubmission->form_submission_id = $formSubmission->id;
-                    $formFieldSubmission->form_field_id = (int) $field_id;
-                    $formFieldSubmission->name = '';
-                    $formFieldSubmission->save();
+                        $formFieldSubmission = new FormFieldSubmission;
+                        $formFieldSubmission->form_submission_id = $formSubmission->id;
+                        $formFieldSubmission->form_field_id = (int) $field_id;
+                        $formFieldSubmission->name = '';
+                        $formFieldSubmission->save();
 
-                    $file = File::handleNewUpload($file, FileType::FORM_UPLOAD, $brand->id);
+                        $file = File::handleNewUpload($file, FileType::FORM_UPLOAD, $brand->id);
 
-                    $formFieldSubmission->files()->attach($file->id);
+                        $formFieldSubmission->files()->attach($file->id);
+                    }
                 }
             }
             $formSubmission->touch();
