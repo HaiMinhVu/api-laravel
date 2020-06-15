@@ -26,5 +26,4 @@ class RestrictViewableFileTypes
         return $next($request);
     }
 
-    protected function isRestrictedFile()
 }
