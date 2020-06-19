@@ -16,4 +16,6 @@ $router->group(['namespace' => 'Crud'], function() use ($router) {
     $router->apiResource('product.image', 'ProductImageController')->only(['index', 'store', 'show']);
     $router->apiResource('product.reticle', 'ProductReticleController')->only(['index', 'store', 'show']);
     $router->apiResource('brand', 'BrandController')->only('index');
+    $router->apiResource('category', 'CategoryController');
+    // ->only(['index', 'show', 'store', 'update', 'delete']);
 });

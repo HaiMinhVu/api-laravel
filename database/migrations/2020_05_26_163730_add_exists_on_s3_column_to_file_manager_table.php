@@ -13,7 +13,7 @@ class AddExistsOnS3ColumnToFileManagerTable extends Migration
      */
     public function up()
     {
-        Schema::table('file_manager', function (Blueprint $table) {
+        Schema::connection('cms')->table('file_manager', function (Blueprint $table) {
             $table->boolean('exists_on_s3')->after('sampleurl');
         });
     }
@@ -25,7 +25,7 @@ class AddExistsOnS3ColumnToFileManagerTable extends Migration
      */
     public function down()
     {
-        Schema::table('file_manager', function (Blueprint $table) {
+        Schema::connection('cms')->table('file_manager', function (Blueprint $table) {
             //
         });
     }

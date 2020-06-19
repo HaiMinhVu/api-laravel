@@ -19,7 +19,8 @@ class Kernel extends ConsoleKernel
         Commands\UploadCategoryImages::class,
         Commands\UploadFeaturedImages::class,
         Commands\UploadProductDocuments::class,
-        Commands\CheckIfExistsRemote::class
+        Commands\CheckIfExistsRemote::class,
+        Commands\FixCategoryManufacturerRelation::class
     ];
 
     /**

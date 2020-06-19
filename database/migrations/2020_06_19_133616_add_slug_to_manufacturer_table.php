@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class SetNullableFieldsToNetsuiteProductsTable extends Migration
+class AddSlugToManufacturerTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class SetNullableFieldsToNetsuiteProductsTable extends Migration
      */
     public function up()
     {
-        // Schema::table('netsuite_products', function (Blueprint $table) {
-            //
-        // });
+        Schema::connection('mysql')->table('list_manufacture', function (Blueprint $table) {
+            $table->string('slug', 20)->after('name');
+        });
     }
 
     /**
@@ -25,8 +25,8 @@ class SetNullableFieldsToNetsuiteProductsTable extends Migration
      */
     public function down()
     {
-        // Schema::table('netsuite_products', function (Blueprint $table) {
-            //
-        // });
+        Schema::connection('mysql')->table('list_manufacture', function (Blueprint $table) {
+            $table->dropColumn('slug');
+        });
     }
 }

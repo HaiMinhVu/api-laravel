@@ -6,14 +6,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Pivots\ProductCategoryAssociation;
 use Illuminate\Support\Str;
-use App\Models\FileManager;
+use App\Models\{
+    FileManager,
+    Manufacturer
+};
 use Cache;
 
 class ProductCategory extends Model
 {
+    use SoftDeletes;
+
     protected $table='product_category';
 
     public $timestamps = false;
+
+    protected $fillable=[
+        'label',
+        'parent',
+        'thumbnail',
+        'manufacture',
+        'short_description',
+        'long_description',
+        'pc_text'
+    ];
 
     public function products()
     {
@@ -29,21 +44,27 @@ class ProductCategory extends Model
 
     public function scopeByManufacturer($query, $manufacturer)
     {
-        $manufacturers = self::apiEndpoints();
+        $manufacturers = Manufacturer::apiEndpoints();
         $manufacturerId = $manufacturers[$manufacturer];
         return $query->where('manufacture', $manufacturerId);
     }
 
     public function scopeTopLevelCategoriesByManufacturer($query, $manufacturer)
     {
-        $manufacturers = self::apiEndpoints();
+        $manufacturers = Manufacturer::apiEndpoints();
         $manufacturerId = $manufacturers[$manufacturer];
+        // dd([$manufacturer, $manufacturerId]);
         return $query->where('parent', $manufacturerId);
     }
 
     public function scopeHasParent($query)
     {
         return $query->where('parent', '>', 0);
+    }
+
+    public function scopeIsParent($query)
+    {
+        return $query->where('parent', 0);
     }
 
     public function parentCategory()

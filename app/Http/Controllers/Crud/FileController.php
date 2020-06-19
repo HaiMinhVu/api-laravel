@@ -81,9 +81,11 @@ class FileController extends Controller
      * @param  \App\Models\FileManager  $fileManager
      * @return \Illuminate\Http\Response
      */
-    public function show(FileManager $fileManager)
+    public function show($fileId)
     {
-        //
+        $file = FileManager::existsOnS3()->find($fileId);
+        $item = ($file) ? new FileListItem($file, 200) : null;
+        return response()->json(['data' => $item]);
     }
 
     /**

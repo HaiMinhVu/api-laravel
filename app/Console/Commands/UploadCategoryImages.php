@@ -42,8 +42,8 @@ class UploadCategoryImages extends Command
 
         $categories->map(function($category){
             try {
-                $response = $category->fileManager->syncWithS3();
-                $this->info("{$response->filename} - {$response->status}");
+                $response = optional($category->fileManager)->syncWithS3();
+                if($response) $this->info("{$response->filename} - {$response->status}");
             } catch (\Exception $e) {
                 $this->error("{$category->fileManager->file_name} - error uploading");
             }
