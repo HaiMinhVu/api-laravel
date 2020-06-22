@@ -13,11 +13,11 @@ class AddProperTimestampsToFormSubmissionsTable extends Migration
      */
     public function up()
     {
-        Schema::table('form_submissions', function (Blueprint $table) {
+        Schema::connection('cms')->table('form_submissions', function (Blueprint $table) {
             $table->dropColumn('created_at');
         });
 
-        Schema::table('form_submissions', function (Blueprint $table) {
+        Schema::connection('cms')->table('form_submissions', function (Blueprint $table) {
             $table->timestamps(0);
         });
     }
@@ -29,7 +29,7 @@ class AddProperTimestampsToFormSubmissionsTable extends Migration
      */
     public function down()
     {
-        Schema::table('form_submissions', function (Blueprint $table) {
+        Schema::connection('cms')->table('form_submissions', function (Blueprint $table) {
             $table->dropTimestamps();
             $table->dateTime('created_at')->nullable();
         });

@@ -17,4 +17,9 @@ class SiteList extends Model
     {
     	return $this->hasMany(FileManager::class, 'site_id');
     }
+
+    public function manufacturer()
+    {
+        return $this->belongsTo(Manufacturer::class, 'prefix', 'prefix');
+    }
 }

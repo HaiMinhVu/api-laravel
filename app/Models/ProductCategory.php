@@ -6,14 +6,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Pivots\ProductCategoryAssociation;
 use Illuminate\Support\Str;
-use App\Models\FileManager;
+use App\Models\{
+    FileManager,
+    Manufacturer
+};
 use Cache;
 
 class ProductCategory extends Model
 {
+    use SoftDeletes;
+
     protected $table='product_category';
 
     public $timestamps = false;
+
+    protected $fillable=[
+        'label',
+        'parent',
+        'thumbnail',
+        'manufacture',
+        'short_description',
+        'long_description',
+        'pc_text'
+    ];
 
     public function products()
     {
@@ -27,23 +42,35 @@ class ProductCategory extends Model
         );
     }
 
-    public function scopeByManufacturer($query, $manufacturer)
+    public function scopeByManufacturer($query, $manufacturerSlug)
     {
-        $manufacturers = self::apiEndpoints();
-        $manufacturerId = $manufacturers[$manufacturer];
-        return $query->where('manufacture', $manufacturerId);
+        $query->whereHas('manufacturer', function($q) use($manufacturerSlug){
+            $q->where('slug', $manufacturerSlug);
+        });
     }
 
-    public function scopeTopLevelCategoriesByManufacturer($query, $manufacturer)
+    public function scopeTopLevel($query)
     {
-        $manufacturers = self::apiEndpoints();
-        $manufacturerId = $manufacturers[$manufacturer];
-        return $query->where('parent', $manufacturerId);
+        $query->whereHas('parentCategory', function($q){
+            $q->isParent();
+        });
     }
 
     public function scopeHasParent($query)
     {
-        return $query->where('parent', '>', 0);
+        $query->where('parent', '>', 0);
+    }
+
+    public function scopeIsParent($query)
+    {
+        $query->where('parent', 0);
+    }
+
+    public function scopeHasActiveProducts($query)
+    {
+        return $query->whereHas('products', function($q){
+            $q->active();
+        });
     }
 
     public function parentCategory()
@@ -61,15 +88,9 @@ class ProductCategory extends Model
         return $this->belongsTo(FileManager::class, 'thumbnail');
     }
 
-    // Inconsistencies in the DB require similar functionality in this model and Manufacturer model
-    public static function apiEndpoints()
+    public function manufacturer()
     {
-        return Cache::remember('product_category_endpoints', 3600, function () {
-            $categories = self::where('parent', 0)->get();
-            return $categories->mapWithKeys(function($category){
-                return [Str::kebab($category->label) => $category->id];
-            });
-        });
+        return $this->belongsTo(Manufacturer::class, 'manufacture');
     }
 
     public function imageUrl()

@@ -37,7 +37,7 @@ class FileListItem extends JsonResource
             try {
                 $s3FilePath = $this->resource->s3FilePath();
                 $height = $this->imageWidth;
-                $url = S3::imageLink($s3FilePath, $this->imageWidth, 
+                $url = S3::imageLink($s3FilePath, $this->imageWidth,
                     [
                     'height' => $height,
                     'background' => [

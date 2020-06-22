@@ -16,27 +16,21 @@ use Str;
 class CategoryController extends Controller
 {
 
-    public function index(Request $request, $manufacturerId)
+    public function index(Request $request, $manufacturerSlug)
     {
-        return $this->cacheResponse($request, function() use ($request, $manufacturerId) { 
-            $ProductCategories = ProductCategory::topLevelCategoriesByManufacturer($manufacturerId)->whereHas('products', function($q){
-                $q->active();
-            })->get();
-            $data = (new CategoryCollectionResource($ProductCategories))->jsonSerialize();
+        return $this->cacheResponse($request, function() use ($request, $manufacturerSlug) {
+            $productCategories = ProductCategory::topLevel()->byManufacturer($manufacturerSlug)->hasActiveProducts()->get();
+
+            $data = (new CategoryCollectionResource($productCategories))->jsonSerialize();
             return response()->json(['data' => $data]);
         });
     }
 
-    public function store(Request $request)
+    public function show(Request $request, $manufacturerSlug, $id)
     {
-        return Product::create($request->all());
-    }
-
-    public function show(Request $request, $manufacturerId, $id)
-    {
-        return $this->cacheResponse($request, function() use ($request, $manufacturerId, $id) { 
+        return $this->cacheResponse($request, function() use ($request, $manufacturerSlug, $id) {
             $category = ProductCategory::where('id', $id)->with(['subCategories' => function($q){
-                $q->whereHas('products');
+                $q->hasActiveProducts();
                 $q->with('fileManager');
             }])->first();
 
@@ -45,17 +39,7 @@ class CategoryController extends Controller
         });
     }
 
-    public function update(Request $request, $product)
-    {
-        $product->update($request->all());
-    }
-
-    public function delete(Request $request, $product)
-    {
-        // Maybe add later
-    }
-
-    public function getProducts(Request $request, $manufacturerId, $id)
+    public function getProducts(Request $request, $manufacturerSlug, $id)
     {
         $products = ProductCategory::find($id)->products()->where(function($q){
             $q->active();
@@ -63,14 +47,14 @@ class CategoryController extends Controller
         return (new ProductCollectionResource($products));
     }
 
-    public function getAll(Request $request, $manufacturerId)
+    public function getAll(Request $request, $manufacturerSlug)
     {
-        return $this->cacheResponse($request, function() use ($request, $manufacturerId) { 
-            $categories = ProductCategory::where(function($q) use ($manufacturerId){
-                $q->where(function($q) use ($manufacturerId){
-                    $q->byManufacturer($manufacturerId);
-                })->orWhere(function($q) use ($manufacturerId){
-                    $q->topLevelCategoriesByManufacturer($manufacturerId);
+        return $this->cacheResponse($request, function() use ($request, $manufacturerSlug) {
+            $categories = ProductCategory::where(function($q) use ($manufacturerSlug){
+                $q->where(function($q) use ($manufacturerSlug){
+                    $q->byManufacturer($manufacturerSlug);
+                })->orWhere(function($q) use ($manufacturerSlug){
+                    $q->topLevel()->byManufacturer($manufacturerSlug);
                 })->hasParent();
             })->get();
 

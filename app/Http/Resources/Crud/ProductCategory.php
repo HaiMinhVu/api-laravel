@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Crud;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\FileManager;
 
 class ProductCategory extends JsonResource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -16,19 +14,12 @@ class ProductCategory extends JsonResource
      */
     public function toArray($request)
     {
-        $data = [
+        return [
             'id' => $this->id,
             'label' => $this->label,
-            'parent' => $this->parent,
-            'image' => $this->imageUrl(),
-            'remote_path' => optional($this->fileManager)->s3FilePath(),
+            'sub_categories' => new ProductCategoryCollection($this->subCategories),
             'product_count' => $this->products()->count()
         ];
-
-        if($this->relationLoaded('subCategories')) {
-            $data['subCategories'] = new ProductCategoryCollection($this->subCategories);
-        }
-
-        return $data;
+        // return parent::toArray($request);
     }
 }

@@ -59,7 +59,7 @@ class FileManager extends Model
 
     public static function defaultImage()
     {
-        return self::where('ID', self::DEFAULT_IMAGE_ID)->first()->url();
+        return optional(self::where('ID', self::DEFAULT_IMAGE_ID)->first())->url();
     }
 
     public function filePath($urlencode = false)

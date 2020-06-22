@@ -17,7 +17,7 @@ class ProductImageController extends Controller
     public function index(Request $request, $productId)
     {
         $product = Product::withoutGlobalScopes()->with(['images.fileManager', 'mainImage'])->find($productId);
-        
+
         $fileManagerModels = $product->images->filter(function($image){
             return $image->fileManager()->exists();
         })->map(function($image){
@@ -27,7 +27,7 @@ class ProductImageController extends Controller
         $mainImage = ($product->mainImage()->exists() && !is_null($product->mainImage)) ? new FileListItem($product->mainImage) : null;
 
         return response()->json([
-            'images' => $fileManagerModels,  
+            'images' => $fileManagerModels,
             'main_image' => $mainImage
         ]);
     }
@@ -41,7 +41,7 @@ class ProductImageController extends Controller
     public function store(Request $request, $productId)
     {
         $product = Product::withoutGlobalScopes()->with(['images.fileManager', 'mainImage'])->find($productId);
-        // dd($request->all());
+
         if($request->has('main_image')) {
             $product->mainImage()->delete();
             if($request->main_image && array_key_exists('id', $request->main_image)) {
@@ -58,6 +58,11 @@ class ProductImageController extends Controller
                 return $image['id'];
             })->all();
             $product->syncImages($imageIds);
+
+            // If main image not assigned, make first image the main image
+            if(count($imageIds) > 0 && !$product->mainImage()->exists()) {
+                $product->main_img_id = $imageIds[0];
+            }
         }
 
         if($product->isDirty()) {

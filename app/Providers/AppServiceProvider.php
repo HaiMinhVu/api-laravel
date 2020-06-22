@@ -11,6 +11,12 @@ use App\Models\V2\{
     File as FileModel,
     FormSubmission as FormSubmissionModel
 };
+use App\Observers\{
+    Product as ProductObserverV1
+};
+use App\Models\{
+    Product as ProductModelV1
+};
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerObservers();
+        // $this->registerObserversV1();
     }
 
     private function registerAWSS3Facade()
@@ -49,5 +56,10 @@ class AppServiceProvider extends ServiceProvider
     {
         FormSubmissionModel::observe(FormSubmissionObserver::class);
         FileModel::observe(FileObserver::class);
+    }
+
+    private function registerObserversV1()
+    {
+        ProductModelV1::observe(ProductObserverV1::class);
     }
 }

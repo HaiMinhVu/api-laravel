@@ -14,20 +14,40 @@ class Manufacturer extends Model
 
     public $timestamps = false;
 
-    // Inconsistencies in the DB require similar functionality in this model and ProductCategory model
     public static function apiEndpoints()
     {
         return Cache::remember('manufacturer_endpoints', 3600, function () {
             $manufacturers = self::all();
             return $manufacturers->mapWithKeys(function($manufacturer){
-                return [Str::kebab($manufacturer->name) => $manufacturer->id];
+                return [$manufacturer->slug => $manufacturer->id];
             });
         });
     }
 
+    public static function cachedAll()
+    {
+        return Cache::remember('manufacturer_all', 3600, function() {
+            return self::all();
+        });
+    }
+
+    public static function findByPrefix(string $prefix)
+    {
+        $all = self::cachedAll();
+        return $all->first(function($manufacturer) use ($prefix){
+            return $manufacturer->prefix == $prefix;
+        });
+    }
+
+    public static function findIdByPrefix(string $prefix)
+    {
+        $manufacturer = self::findByPrefix($prefix);
+        return optional($manufacturer)->id;
+    }
+
     public static function findByKey($key)
     {
-        $manufacturers = self::all();
+        $manufacturers = self::cachedAll();
         return $manufacturers->first(function($manufacturer) use ($key) {
             return Str::kebab($manufacturer->name) == $key;
         });
@@ -36,5 +56,10 @@ class Manufacturer extends Model
     public static function siteByKey($key)
     {
         return optional(self::findByKey($key))->site;
+    }
+
+    public function productCategories()
+    {
+        return $this->hasMany(ProductCategory::class, 'manufacture');
     }
 }

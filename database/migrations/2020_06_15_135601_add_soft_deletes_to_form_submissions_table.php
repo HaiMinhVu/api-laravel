@@ -13,7 +13,7 @@ class AddSoftDeletesToFormSubmissionsTable extends Migration
      */
     public function up()
     {
-        Schema::table('form_submissions', function (Blueprint $table) {
+        Schema::connection('cms')->table('form_submissions', function (Blueprint $table) {
             $table->softDeletes();
         });
     }
@@ -25,7 +25,7 @@ class AddSoftDeletesToFormSubmissionsTable extends Migration
      */
     public function down()
     {
-        Schema::table('form_submissions', function (Blueprint $table) {
+        Schema::connection('cms')->table('form_submissions', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }
