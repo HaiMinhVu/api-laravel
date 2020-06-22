@@ -42,29 +42,35 @@ class ProductCategory extends Model
         );
     }
 
-    public function scopeByManufacturer($query, $manufacturer)
+    public function scopeByManufacturer($query, $manufacturerSlug)
     {
-        $manufacturers = Manufacturer::apiEndpoints();
-        $manufacturerId = $manufacturers[$manufacturer];
-        return $query->where('manufacture', $manufacturerId);
+        $query->whereHas('manufacturer', function($q) use($manufacturerSlug){
+            $q->where('slug', $manufacturerSlug);
+        });
     }
 
-    public function scopeTopLevelCategoriesByManufacturer($query, $manufacturer)
+    public function scopeTopLevel($query)
     {
-        $manufacturers = Manufacturer::apiEndpoints();
-        $manufacturerId = $manufacturers[$manufacturer];
-        // dd([$manufacturer, $manufacturerId]);
-        return $query->where('parent', $manufacturerId);
+        $query->whereHas('parentCategory', function($q){
+            $q->isParent();
+        });
     }
 
     public function scopeHasParent($query)
     {
-        return $query->where('parent', '>', 0);
+        $query->where('parent', '>', 0);
     }
 
     public function scopeIsParent($query)
     {
-        return $query->where('parent', 0);
+        $query->where('parent', 0);
+    }
+
+    public function scopeHasActiveProducts($query)
+    {
+        return $query->whereHas('products', function($q){
+            $q->active();
+        });
     }
 
     public function parentCategory()
@@ -82,15 +88,9 @@ class ProductCategory extends Model
         return $this->belongsTo(FileManager::class, 'thumbnail');
     }
 
-    // Inconsistencies in the DB require similar functionality in this model and Manufacturer model
-    public static function apiEndpoints()
+    public function manufacturer()
     {
-        return Cache::remember('product_category_endpoints', 3600, function () {
-            $categories = self::where('parent', 0)->get();
-            return $categories->mapWithKeys(function($category){
-                return [Str::kebab($category->label) => $category->id];
-            });
-        });
+        return $this->belongsTo(Manufacturer::class, 'manufacture');
     }
 
     public function imageUrl()

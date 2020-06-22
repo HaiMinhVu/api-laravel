@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Closure;
+use App;
 
 class ApiAuth
 {
@@ -36,7 +37,9 @@ class ApiAuth
      */
     private function authorized(Request $request)
     {
+        if(!App::environment('local')) {
+            return $request->header(self::HEADER_KEY) === config('auth.api_auth.token');
+        }
         return true;
-        return $request->header(self::HEADER_KEY) === config('auth.api_auth.token') && config('app.env') != 'local';
     }
 }

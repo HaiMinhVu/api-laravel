@@ -14,7 +14,6 @@ class Manufacturer extends Model
 
     public $timestamps = false;
 
-    // Inconsistencies in the DB require similar functionality in this model and ProductCategory model
     public static function apiEndpoints()
     {
         return Cache::remember('manufacturer_endpoints', 3600, function () {
@@ -57,5 +56,10 @@ class Manufacturer extends Model
     public static function siteByKey($key)
     {
         return optional(self::findByKey($key))->site;
+    }
+
+    public function productCategories()
+    {
+        return $this->hasMany(ProductCategory::class, 'manufacture');
     }
 }

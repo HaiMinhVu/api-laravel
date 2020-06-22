@@ -21,7 +21,8 @@ class ProductCategory extends JsonResource
             'label' => $this->label,
             'parent' => $this->parent,
             'image' => $this->imageUrl(),
-            'remote_path' => optional($this->fileManager)->s3FilePath()
+            'remote_path' => optional($this->fileManager)->s3FilePath(),
+            'product_count' => $this->products()->count()
         ];
 
         if($this->relationLoaded('subCategories')) {

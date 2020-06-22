@@ -15,8 +15,6 @@ class Product extends JsonResource
             return ucfirst($trimmed);
         }, $keywords);
 
-        // dd($this);
-
         return [
             'id' => $this->id,
             'sku' => $this->sku,

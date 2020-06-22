@@ -42,12 +42,28 @@ class FixCategoryManufacturerRelation extends Command
     public function handle()
     {
         $this->count = 0;
-        $category = ProductCategory::find($this->option('id'));
+        if($categoryId = $this->option('id')) {
+            $this->handleSingleCategory($categoryId);
+        } else {
+            $this->handleParentCategories();
+        }
+        $this->info("Updated {$this->count} Categories");
+    }
+
+    protected function handleParentCategories()
+    {
+        ProductCategory::isParent()->select('id')->get()->map(function($parentCategory){
+            $this->handleSingleCategory($parentCategory->id);
+        });
+    }
+
+    protected function handleSingleCategory($categoryId)
+    {
+        $category = ProductCategory::find($categoryId);
         if($category) {
             $manufacturerId = $category->manufacture;
             $this->recursivelyAssignManufacturer($category, $manufacturerId);
         }
-        $this->info("Updated {$this->count} Categories");
     }
 
     protected function recursivelyAssignManufacturer(ProductCategory $category, int $manufacturerId)
