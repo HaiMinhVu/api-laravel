@@ -156,7 +156,7 @@
             >
           <![endif]-->
               <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                <table border="0" cellpadding="0" cellspacing="0" role="presentatcion" style="vertical-align:top;" width="100%">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                   <tr>
                     <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                       <div style="font-family:Roboto;font-size:13px;line-height:1;text-align:left;color:#000000;">Congratulations on your new purchase. Below is your product registration info. Please save for your records.</div>
