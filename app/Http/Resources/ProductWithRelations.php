@@ -43,6 +43,7 @@ class ProductWithRelations extends Product
         $downloads = optional(collect($this->manuals)->merge($this->specSheets))->map(function($download){
             return [
                 'name' => $download->file_name,
+                'display_name' => $download->display_name,
                 'url' => $download->url(),
                 'remote_path' => $download->s3FilePath()
             ];
@@ -59,7 +60,8 @@ class ProductWithRelations extends Product
             }),
             'specs' => $this->specs->map(function($spec){
                 return [
-                    'name' => $spec->list->name,
+                    'name' => $spec->list->utf8Convert('name'),
+                    'suffix' => $spec->suffix,
                     'value' => $spec->description
                 ];
             }),
