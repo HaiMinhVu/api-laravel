@@ -60,12 +60,10 @@ class ProductWithRelations extends Product
             }),
             'specs' => $this->specs->map(function($spec){
                 return [
-                // return mb_convert_encoding([
                     'name' => $spec->list->utf8Convert('name'),
-                    'value' => $spec->description,
-                    'suffix' => $spec->suffix
-                // ], 'UTF-8', 'UTF-8');
-            ];
+                    'suffix' => $spec->suffix,
+                    'value' => $spec->description
+                ];
             }),
             'videos' => optional($this->videos)->map(function($video){
                 return [
