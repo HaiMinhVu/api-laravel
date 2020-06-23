@@ -43,6 +43,7 @@ class ProductWithRelations extends Product
         $downloads = optional(collect($this->manuals)->merge($this->specSheets))->map(function($download){
             return [
                 'name' => $download->file_name,
+                'display_name' => $download->display_name,
                 'url' => $download->url(),
                 'remote_path' => $download->s3FilePath()
             ];
@@ -59,9 +60,12 @@ class ProductWithRelations extends Product
             }),
             'specs' => $this->specs->map(function($spec){
                 return [
-                    'name' => $spec->list->name,
-                    'value' => $spec->description
-                ];
+                // return mb_convert_encoding([
+                    'name' => $spec->list->utf8Convert('name'),
+                    'value' => $spec->description,
+                    'suffix' => $spec->suffix
+                // ], 'UTF-8', 'UTF-8');
+            ];
             }),
             'videos' => optional($this->videos)->map(function($video){
                 return [
