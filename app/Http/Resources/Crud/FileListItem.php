@@ -62,6 +62,7 @@ class FileListItem extends JsonResource
             'description' => $this->description,
             'brand' => $this->resource->siteList->label,
             'url' => $url,
+            'raw_url' =>  $this->resource->getS3Url(),
             'is_image' => $isImage
         ];
     }

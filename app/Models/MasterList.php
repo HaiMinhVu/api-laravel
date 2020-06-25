@@ -13,13 +13,15 @@ class MasterList extends Model
     const MANUAL_IDS = [15, 11];
     const SPEC_SHEET_IDS = [16, 12];
     const CATALOG_IDS = [31, 30];
+	const DOWNLOAD_IDS = [48];
 
     const TYPES = [
     	'image' => self::IMAGE_IDS,
     	'catalog' => self::CATALOG_IDS,
     	'manual' => self::MANUAL_IDS,
     	'proof_of_purchase' => self::PROOF_OF_PURCHASE_IDS,
-    	'spec_sheet' => self::SPEC_SHEET_IDS
+    	'spec_sheet' => self::SPEC_SHEET_IDS,
+		'download' => self::DOWNLOAD_IDS
     ];
 
     protected $table='master_list';
