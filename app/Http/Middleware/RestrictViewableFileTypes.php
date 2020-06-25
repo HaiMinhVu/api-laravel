@@ -16,11 +16,15 @@ class RestrictViewableFileTypes
      */
     public function handle($request, Closure $next)
     {
-        if($key = $request->route()->parameter('key')) {
-            $pathInfo = pathinfo($key);
-            [$brandSlug, $typePath] = explode('/', $pathInfo['dirname']);
-            $isRestricted = FileType::isPathRestricted($typePath);
-            if($isRestricted) return abort(403);
+        try {
+            if($key = $request->route()->parameter('key')) {
+                $pathInfo = pathinfo($key);
+                [$brandSlug, $typePath] = explode('/', $pathInfo['dirname']);
+                $isRestricted = FileType::isPathRestricted($typePath);
+                if($isRestricted) return abort(403);
+            }
+        } catch(\Exception $e) {
+            return abort(403);
         }
 
         return $next($request);

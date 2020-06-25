@@ -8,11 +8,13 @@ class FileType extends BaseModel
 	const SPEC_SHEET = 'Spec Sheet';
 	const MANUALS = 'Manual';
 	const FORM_UPLOAD = 'Form Upload';
+	const DOWNLOAD = 'Download';
 
 	const UNRESTRICTED_TYPES = [
 		self::IMAGE,
 		self::SPEC_SHEET,
-		self::MANUALS
+		self::MANUALS,
+		self::DOWNLOAD
 	];
 
     /**
