@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Crud;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
+use App\Models\{
+    FileManager,
+    Product
+};
 use Illuminate\Http\Request;
 use App\Http\Resources\Crud\ProductListItem as ProductListItemResource;
 use S3;
@@ -49,7 +52,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product, FileManager $fileManager)
     {
         //
     }
@@ -81,7 +84,7 @@ class ProductController extends Controller
                     'alpha' => 1
                 ]
             ]);
-            
+
             return [
                 'id' => $product->id,
                 'nsid' => $product->nsid,

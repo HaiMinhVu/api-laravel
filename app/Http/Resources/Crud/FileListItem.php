@@ -55,7 +55,7 @@ class FileListItem extends JsonResource
             $url = $this->resource->getS3Url();
         }
 
-        return [
+        $data = [
             'id' => $this->ID,
             'file_name' => $this->file_name,
             'display_name' => $this->display_name,
@@ -65,5 +65,20 @@ class FileListItem extends JsonResource
             'raw_url' =>  $this->resource->getS3Url(),
             'is_image' => $isImage
         ];
+
+        if($this->resource->isType('manual')) {
+            $data['languages'] = $this->resource->load(['manuals.languages', 'manuals' => function($q){
+                $q->whereHas('languages');
+            }])->manuals->map(function($manual){
+                return $manual->languages->map(function($language){
+                    return [
+                        'id' => $language->id,
+                        'value' => $language->description
+                    ];
+                });
+            })->flatten(1)->unique();
+        }
+
+        return $data;
     }
 }

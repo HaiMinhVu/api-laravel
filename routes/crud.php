@@ -17,5 +17,7 @@ $router->group(['namespace' => 'Crud'], function() use ($router) {
     $router->apiResource('product.reticle', 'ProductReticleController')->only(['index', 'store', 'show']);
     $router->apiResource('brand', 'BrandController')->only('index');
     $router->apiResource('category', 'CategoryController');
-    // $router->apiResource('product.file', 'ProductFileController');
+    $router->apiResource('product.file', 'ProductFileController');
+    $router->apiResource('language', 'LanguageController')->only('index');
+    $router->apiResource('product.manual.language', 'ProductManualLanguageController')->only('store');
 });
