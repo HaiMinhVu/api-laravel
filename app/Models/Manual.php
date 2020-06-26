@@ -11,12 +11,22 @@ class Manual extends Model
 
     public $timestamps = false;
 
-    protected static function boot()
+    public function languages()
     {
-        parent::boot();
+        return $this->belongsToMany(
+            MasterList::class,
+            'manual_language',
+            'manual_id',
+            'language_id'
+        );
+    }
 
-        static::addGlobalScope('active_status', function($builder) {
-            $builder->where('status', 1);
-        });
+    public function fileManager()
+    {
+        return $this->belongsTo(
+            FileManager::class,
+            'file_id',
+            'ID'
+        );
     }
 }

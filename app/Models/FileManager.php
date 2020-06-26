@@ -14,6 +14,8 @@ class FileManager extends Model
     const DEFAULT_DIRECTORY = 'uncategorized';
     const DEFAULT_IMAGE_ID = 16585;
 
+    protected $hidden = ['pivot'];
+
      /**
      * The primary key associated with the table.
      *
@@ -150,6 +152,18 @@ class FileManager extends Model
        if($typeName && array_key_exists($typeName, MasterList::TYPES)) {
             return $query->whereIn('site_folder_id', MasterList::TYPES[$typeName]);
        }
+    }
+
+    public function isType($typeName)
+    {
+        if($typeName && array_key_exists($typeName, MasterList::TYPES)) {
+            return in_array($this->site_folder_id, MasterList::TYPES[$typeName]);
+        }
+    }
+
+    public function manuals()
+    {
+        return $this->hasMany(Manual::class, 'file_id', 'ID');
     }
 
     public function isImage()

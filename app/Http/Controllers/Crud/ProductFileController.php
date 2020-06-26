@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Crud;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\{
+    FileManager,
+    Product
+};
+use App\Http\Resources\Crud\FileListItem;
 
 class ProductFileController extends Controller
 {
@@ -15,9 +19,14 @@ class ProductFileController extends Controller
      */
     public function index(Request $request, Product $product)
     {
-        $query = $product->fileManager();
-        $query->byType('spec_sheet');
-        dd($query->get());
+        $files = $product->files();
+        if($request->has('type')) {
+            $type = $request->type;
+            $files = $product->files()->filter(function($file) use ($type) {
+                return $file->isType($type);
+            });
+        }
+        return FileListItem::collection($files);
     }
 
     /**
@@ -26,9 +35,15 @@ class ProductFileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Product $product)
     {
-        //
+        $validated = $request->validate([
+            'type' => 'required|string',
+            'ids' => 'required|array'
+        ]);
+        if($validated) {
+            $product->syncFilesByType($request->type, $request->ids);
+        }
     }
 
     /**
@@ -49,9 +64,13 @@ class ProductFileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product, FileManager $file)
     {
-        //
+        dd([
+            $request->type,
+            $product,
+            $file
+        ]);
     }
 
     /**

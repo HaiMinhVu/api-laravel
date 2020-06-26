@@ -12,6 +12,7 @@ use App\Pivots\{
 
 class Product extends Model
 {
+    protected $hidden = ['pivot'];
 
     protected $table='product';
 
@@ -157,28 +158,91 @@ class Product extends Model
         );
     }
 
+    // Old Relation
+    // public function specSheets()
+    // {
+    //     return $this->hasManyThrough(
+    //         FileManager::class,
+    //         SpecSheet::class,
+    //         'product_id',
+    //         'id',
+    //         'id',
+    //         'file_id'
+    //     );
+    // }
+
+    // Old Relation
+    // public function manuals()
+    // {
+    //     return $this->hasManyThrough(
+    //         FileManager::class,
+    //         Manual::class,
+    //         'product_id',
+    //         'id',
+    //         'id',
+    //         'file_id'
+    //     );
+    // }
+
     public function specSheets()
     {
-        return $this->hasManyThrough(
+        return $this->belongsToMany(
             FileManager::class,
-            SpecSheet::class,
+            'spec_sheet',
             'product_id',
+            'file_id',
             'id',
-            'id',
-            'file_id'
+            'ID'
         );
     }
 
     public function manuals()
     {
-        return $this->hasManyThrough(
+        return $this->belongsToMany(
             FileManager::class,
-            Manual::class,
+            'manuals',
             'product_id',
+            'file_id',
             'id',
-            'id',
-            'file_id'
+            'ID'
         );
+    }
+
+    public function downloads()
+    {
+        return $this->belongsToMany(
+            FileManager::class,
+            'product_download',
+            'product_id',
+            'file_manager_id',
+            'id',
+            'ID'
+        );
+    }
+
+    public function syncFilesByType(string $type, array $ids)
+    {
+        if(in_array(strtolower($type), ['download', 'downloads'])) {
+            return $this->downloads()->sync($ids);
+        }
+        if(in_array(strtolower($type), ['spec_sheet', 'spec_sheets'])) {
+            $this->specSheets()->detach();
+            return $this->specSheets()->attach($ids);
+        }
+        if(in_array(strtolower($type), ['manual', 'manuals'])) {
+            $this->manuals()->detach();
+            return $this->manuals()->attach($ids);
+        }
+    }
+
+    public function files()
+    {
+        return $this->specSheets->merge($this->manuals->merge($this->downloads));
+        // return $this->specSheets()->union($this->manuals());
+        $specSheets = $this->specSheets;
+        $query = $this->manuals()->union($query->getQuery());
+        return $this->downloads()->union($query->getQuery());
+        return $this->specSheets()->union($this->manuals()->union($this->downloads()));
     }
 
     public function featuredProduct()
@@ -201,7 +265,7 @@ class Product extends Model
         }
     }
 
-    public function syncImages($ids = []) 
+    public function syncImages($ids = [])
     {
         if(count($ids) > 0) {
             $productImages = collect($ids)->map(function($id, $idx) {
