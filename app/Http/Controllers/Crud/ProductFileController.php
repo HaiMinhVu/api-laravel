@@ -54,7 +54,7 @@ class ProductFileController extends Controller
      */
     public function show(Product $product)
     {
-        dd($product);
+        //
     }
 
     /**
@@ -66,11 +66,7 @@ class ProductFileController extends Controller
      */
     public function update(Request $request, Product $product, FileManager $file)
     {
-        dd([
-            $request->type,
-            $product,
-            $file
-        ]);
+        //
     }
 
     /**
