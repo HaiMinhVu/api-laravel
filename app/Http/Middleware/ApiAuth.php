@@ -25,7 +25,7 @@ class ApiAuth
             return response()->json(['message' => self::MESSAGE], self::CODE);
         }
 
-        return $next($request)->header('Access-Control-Allow-Origin:', 'http://test.com');
+        return $next($request);
 
     }
 
