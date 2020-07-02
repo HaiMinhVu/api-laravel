@@ -39,44 +39,10 @@ class ProductFileController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|string',
-            'ids' => 'required|array'
+            'ids' => 'array'
         ]);
         if($validated) {
             $product->syncFilesByType($request->type, $request->ids);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Product $product, FileManager $file)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

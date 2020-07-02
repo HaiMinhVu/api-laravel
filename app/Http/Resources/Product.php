@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class Product extends JsonResource
 {
@@ -30,7 +31,9 @@ class Product extends JsonResource
             'upc' => $this->UPC,
             'total_quantity_on_hand' => $this->netsuiteProduct->total_quantity_on_hand,
             'price' => $this->netsuiteProduct->onlineprice,
-            'in_stock' => ($this->netsuiteProduct->total_quantity_on_hand > 0)
+            'in_stock' => ($this->netsuiteProduct->total_quantity_on_hand > 0),
+            'last_remote_update' => Carbon::parse($this->netsuiteProduct->updated_at)->setTimezone('UTC')->format('c'),
+            'upc' => $this->UPC
         ];
     }
 

@@ -6,11 +6,13 @@ use Illuminate\Http\Request;
 use Closure;
 use App;
 
-class ApiAuth
+class FilterOrigin
 {
     const CODE = 401;
     const MESSAGE = 'Unauthorized';
-    const HEADER_KEY = 'X-API-KEY';
+    CONST ALLOWABLE_HOSTS = [
+        'https://cms.slmk.dev'
+    ];
 
     /**
      * Handle an incoming request.
@@ -21,12 +23,10 @@ class ApiAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$this->authorized($request)) {
+        if(!$this->authorized($request)) {
             return response()->json(['message' => self::MESSAGE], self::CODE);
         }
-
-        return $next($request)->header('Access-Control-Allow-Origin:', 'http://test.com');
-
+        return $next($request);
     }
 
     /**
@@ -38,8 +38,9 @@ class ApiAuth
     private function authorized(Request $request)
     {
         if(!App::environment('local')) {
-            return $request->header(self::HEADER_KEY) === config('auth.api_auth.token');
+            return in_array($request->server->get('HTTP_ORIGIN'), self::ALLOWABLE_HOSTS);
         }
         return true;
     }
+
 }
