@@ -23,8 +23,6 @@ class NetsuiteProduct extends Model
         "onlineprice", "backordered", "product_sizing"
     ];
 
-    public $timestamps = false;
-
     protected $with = ['productCategory'];
 
     public function productCategory()

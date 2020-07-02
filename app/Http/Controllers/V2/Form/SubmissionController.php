@@ -22,6 +22,7 @@ class SubmissionController extends Controller
     public function __construct()
     {
         $this->middleware('api')->except('store');
+        $this->middleware('filter-origin')->only('index');
     }
 
     /**

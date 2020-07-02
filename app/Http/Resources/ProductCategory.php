@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\FileManager;
+use Carbon\Carbon;
 
 class ProductCategory extends JsonResource
 {
@@ -22,7 +23,8 @@ class ProductCategory extends JsonResource
             'parent' => $this->parent,
             'image' => $this->imageUrl(),
             'remote_path' => optional($this->fileManager)->s3FilePath(),
-            'product_count' => $this->products()->count()
+            'product_count' => $this->products()->count(),
+            'last_update' => Carbon::parse($this->date_modified)->setTimezone('UTC')->format('c')
         ];
 
         if($this->relationLoaded('subCategories')) {

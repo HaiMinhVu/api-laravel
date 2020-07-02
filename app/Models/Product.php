@@ -193,7 +193,7 @@ class Product extends Model
             'file_id',
             'id',
             'ID'
-        );
+        )->existsOnS3();
     }
 
     public function manuals()
@@ -205,7 +205,7 @@ class Product extends Model
             'file_id',
             'id',
             'ID'
-        );
+        )->existsOnS3();
     }
 
     public function downloads()
@@ -217,7 +217,7 @@ class Product extends Model
             'file_manager_id',
             'id',
             'ID'
-        );
+        )->existsOnS3();
     }
 
     public function syncFilesByType(string $type, array $ids)

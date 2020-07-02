@@ -14,7 +14,7 @@ use App\Models\V2\{
 
 class FormController extends Controller
 {
-    public function __construct() 
+    public function __construct()
     {
         $this->middleware('api')->except('show');
     }
