@@ -33,7 +33,8 @@ class Product extends JsonResource
             'price' => $this->netsuiteProduct->onlineprice,
             'in_stock' => ($this->netsuiteProduct->total_quantity_on_hand > 0),
             'last_remote_update' => Carbon::parse($this->netsuiteProduct->updated_at)->setTimezone('UTC')->format('c'),
-            'upc' => $this->UPC
+            'upc' => $this->UPC,
+            'allow_backorders' => $this->allow_backorders
         ];
     }
 
