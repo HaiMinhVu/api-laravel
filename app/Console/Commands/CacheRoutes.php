@@ -7,9 +7,9 @@ use Illuminate\Routing\Router;
 use Illuminate\Routing\Route;
 use Illuminate\Http\Request;
 use App\Models\{
-    FeaturedProduct, 
-    Product, 
-    ProductCategory, 
+    FeaturedProduct,
+    Product,
+    ProductCategory,
     SliderImage
 };
 use App\Jobs\CacheRoute;
@@ -42,6 +42,7 @@ class CacheRoutes extends Command
 
     const MANUFACTURERS = [
         'pulsar',
+        'firefied'
     ];
 
     const QUEUE_NAME = 'route_queue';
@@ -105,7 +106,7 @@ class CacheRoutes extends Command
 
     private function cacheAllCategoryRoutes()
     {
-        ProductCategory::byManufacturer('pulsar')->select('id')->get()->map(function($category){
+        ProductCategory::byManufacturer($this->currentManufacturer)->select('id')->get()->map(function($category){
             $this->cacheRoute("category/{$category->id}");
             $this->cacheRoute("category/{$category->id}/products");
         });
@@ -133,7 +134,7 @@ class CacheRoutes extends Command
     }
 
     private function cacheRoute($urlPath, $isManufacturerRoute = true)
-    {   
+    {
         $url = $this->fullRoute($urlPath, $isManufacturerRoute);
         CacheRoute::dispatch($url)->onQueue(self::QUEUE_NAME);
         $this->cacheCount++;
@@ -161,7 +162,7 @@ class CacheRoutes extends Command
        private function runQueue()
     {
         $this->call('queue:work', [
-            "--queue" => self::QUEUE_NAME, 
+            "--queue" => self::QUEUE_NAME,
             "--stop-when-empty" => true
         ]);
     }
