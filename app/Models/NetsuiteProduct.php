@@ -99,6 +99,11 @@ class NetsuiteProduct extends Model
         ];
     }
 
+    public function scopeFilteredSelect($query, array $selected)
+    {
+        return $query->select(array_intersect($selected, $this->fillable));
+    }
+
     private static function parseTimeV1($timeString)
     {
         if($timeString) {

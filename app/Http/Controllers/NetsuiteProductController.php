@@ -8,6 +8,15 @@ use Carbon\Carbon;
 
 class NetsuiteProductController extends Controller
 {
+    public function index(Request $request)
+	{
+        $query = NetsuiteProduct::query();
+        if($request->has('fields')) {
+            $query->filteredSelect($request->fields);
+        }
+		return $query->without('productCategory')->get();
+	}
+
     /**
      * Mass update NetsuiteProducts
      *
