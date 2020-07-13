@@ -101,7 +101,8 @@ class NetsuiteProduct extends Model
 
     public function scopeFilteredSelect($query, array $selected)
     {
-        return $query->select(array_intersect($selected, $this->fillable));
+        $filtered = collect($selected)->intersect($this->fillable)->all();
+        return $query->select($filtered);
     }
 
     private static function parseTimeV1($timeString)
