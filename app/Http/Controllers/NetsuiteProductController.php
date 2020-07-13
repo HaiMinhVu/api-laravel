@@ -10,13 +10,11 @@ class NetsuiteProductController extends Controller
 {
     public function index(Request $request)
 	{
-		// return $this->cacheResponse($request, function() use ($request) {
-            $query = NetsuiteProduct::query();
-            if($request->has('fields')) {
-                $query->select($request->fields);
-            }
-			return $query->without('productCategory')->get();
-		// });
+        $query = NetsuiteProduct::query();
+        if($request->has('fields')) {
+            $query->filteredSelect($request->fields);
+        }
+		return $query->without('productCategory')->get();
 	}
 
     /**
