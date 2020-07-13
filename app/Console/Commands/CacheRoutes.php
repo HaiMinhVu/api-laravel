@@ -42,7 +42,7 @@ class CacheRoutes extends Command
 
     const MANUFACTURERS = [
         'pulsar',
-        'firefied'
+        'firefield'
     ];
 
     const QUEUE_NAME = 'route_queue';
