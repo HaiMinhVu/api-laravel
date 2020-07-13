@@ -11,8 +11,8 @@ class NetsuiteProductController extends Controller
     public function index(Request $request)
 	{
         $query = NetsuiteProduct::query();
-        if($request->has('fields')) {
-            $query->filteredSelect($request->fields);
+        if($request->has('select_fields')) {
+            $query->filteredSelect($request->select_fields);
         }
 		return $query->without('productCategory')->get();
 	}
