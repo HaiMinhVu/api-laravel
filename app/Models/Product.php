@@ -41,6 +41,11 @@ class Product extends Model
         return $this->load(self::ALL_RELATIONS);
     }
 
+    public function manufacturer()
+    {
+        return $this->belongsTo(Manufacturer::class, 'manufacture');
+    }
+
     public function scopeByManufacturer($query, $manufacturer)
     {
         $manufacturers = Manufacturer::apiEndpoints();

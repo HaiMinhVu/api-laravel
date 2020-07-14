@@ -31,6 +31,13 @@ class Manufacturer extends Model
         });
     }
 
+    public static function cachedActive()
+    {
+        return Cache::remember('manufacturer_active', 3600, function() {
+            return self::active()->get();
+        });
+    }
+
     public static function findByPrefix(string $prefix)
     {
         $all = self::cachedAll();
@@ -62,4 +69,10 @@ class Manufacturer extends Model
     {
         return $this->hasMany(ProductCategory::class, 'manufacture');
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('manufacture_active', 1);
+    }
+
 }
