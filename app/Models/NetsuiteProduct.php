@@ -30,9 +30,22 @@ class NetsuiteProduct extends Model
         return $this->belongsTo(ProductCategory::class, 'ns_product_category', 'label');
     }
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'nsid', 'nsid');
+    }
+
     public function scopeActiveInWebstore($query)
     {
         return $query->where('active_in_webstore', self::IS_ACTIVE_IN_WEBSTORE);
+    }
+
+    public function scopeHasActiveManufacturer($query)
+    {
+        $activeManufacturerPrefixes = Manufacturer::cachedActive()->pluck('prefix')->all();
+        foreach ($activeManufacturerPrefixes as $prefix) {
+            $query->orWhere('sku', 'LIKE', "{$prefix}%");
+        }
     }
 
     public function scopeCurrent($query)

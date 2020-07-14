@@ -10,7 +10,7 @@ class NetsuiteProductController extends Controller
 {
     public function index(Request $request)
 	{
-        $query = NetsuiteProduct::query();
+        $query = NetsuiteProduct::hasActiveManufacturer();
         if($request->has('select_fields')) {
             $query->filteredSelect($request->select_fields);
         }
