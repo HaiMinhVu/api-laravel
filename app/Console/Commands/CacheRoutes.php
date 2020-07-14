@@ -42,6 +42,7 @@ class CacheRoutes extends Command
 
     const MANUFACTURERS = [
         'pulsar',
+        'sightmark',
         'firefield'
     ];
 
