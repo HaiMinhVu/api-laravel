@@ -17,11 +17,19 @@ class SliderImage extends JsonResource
     {
         $fileManager = $this->fileManager;
 
-        return [
+        $slider = [
             'description' => $this->description,
             'text' => $this->text,
             'url' => $fileManager->url(),
             'remote_path' => $fileManager->s3FilePath()
         ];
+
+        $link = optional($this->link_value);
+
+        if($link && strlen($link) > 0) {
+            $slider['link'] = trim($link);
+        }
+
+        return $slider;
     }
 }
