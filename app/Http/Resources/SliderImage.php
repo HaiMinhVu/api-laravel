@@ -24,10 +24,10 @@ class SliderImage extends JsonResource
             'remote_path' => $fileManager->s3FilePath()
         ];
 
-        $link = optional($this->link_value);
+        $link = trim($this->link_value);
 
         if($link && strlen($link) > 0) {
-            $slider['link'] = trim($link);
+            $slider['link'] = $link;
         }
 
         return $slider;
