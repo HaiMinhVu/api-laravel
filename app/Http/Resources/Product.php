@@ -8,6 +8,17 @@ use Carbon\Carbon;
 class Product extends JsonResource
 {
 
+    /**
+     * @OA\Schema(
+     *     title="Product",
+     *     description="Product resource",
+     *     schema="ProductResource",
+     *     @OA\Xml(
+     *         name="Product"
+     *     )
+     * )
+     */
+
     protected function initialData()
     {
         $keywords = explode(',', $this->keywords);
@@ -16,13 +27,16 @@ class Product extends JsonResource
             return ucfirst($trimmed);
         }, $keywords);
 
+        $description = trim($this->feature_desc);
+        $description = strip_tags($description, "<a><br><div><table><tr><td><p><img><ul><ol><li>");
+
         return [
             'id' => $this->id,
             'sku' => $this->sku,
             'nsid' => $this->nsid,
-            'name' => $this->Name,
-            'description' => $this->feature_desc,
-            'feature_name' => $this->feature_name,
+            'name' => trim($this->Name),
+            'description' => $description,
+            'feature_name' => trim($this->feature_name),
             'main_image' => optional($this->mainImage()->first())->url(),
             'main_image_id' => optional($this->mainImage()->first())->id,
             'remote_image_path' => optional($this->mainImage()->first())->s3FilePath(),
