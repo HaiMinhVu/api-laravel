@@ -34,21 +34,25 @@ class ProductListItem extends JsonResource
     public function toArray($request)
     {
         try {
-            $s3FilePath = $this->mainImage->s3FilePath();
-            $height = $this->imageWidth;
-            $imageUrl = S3::imageLink($s3FilePath, 40, [
-                'height' => $height,
-                'background' => [
-                    'r' => 255,
-                    'g' => 255,
-                    'b' => 255,
-                    'alpha' => 1
-                ]
-            ]);
+            $s3FilePath = optional($this->mainImage)->s3FilePath();
+            if($s3FilePath) {
+                $height = $this->imageWidth;
+                $imageUrl = S3::imageLink($s3FilePath, 40, [
+                    'height' => $height,
+                    'background' => [
+                        'r' => 255,
+                        'g' => 255,
+                        'b' => 255,
+                        'alpha' => 1
+                    ]
+                ]);
+            } else {
+                $imageUrl = null;
+            }
         } catch(\Exception $e) {
             $imageUrl = null;
         }
-        
+
         return [
             'id' => $this->id,
             'nsid' => $this->nsid,

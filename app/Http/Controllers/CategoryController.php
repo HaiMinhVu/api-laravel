@@ -8,7 +8,7 @@ use App\Models\ProductCategory;
 use App\Http\Resources\{
     ProductCollection as ProductCollectionResource,
     ProductCategory as ProductCategoryResource,
-    ProductCategoryCollection as CategoryCollectionResource,
+    ProductCategoryCollection as CategoryCollectionResource
 };
 use Cache;
 use Str;
@@ -41,10 +41,12 @@ class CategoryController extends Controller
 
     public function getProducts(Request $request, $manufacturerSlug, $id)
     {
-        $products = ProductCategory::find($id)->products()->where(function($q){
-            $q->active();
-        })->get();
-        return (new ProductCollectionResource($products));
+        return $this->cacheResponse($request, function() use ($request, $manufacturerSlug, $id) {
+            $products = ProductCategory::find($id)->products()->where(function($q){
+                $q->active();
+            })->get();
+            return (new ProductCollectionResource($products));
+        });
     }
 
     public function getAll(Request $request, $manufacturerSlug)
@@ -58,7 +60,7 @@ class CategoryController extends Controller
                 })->hasParent();
             })->get();
 
-            $data = new CategoryCollectionResource($categories);
+            $data = new CategoryAllCollectionResource($categories);
 
             return response()->json(['data' => $data]);
         });

@@ -37,6 +37,10 @@ Route::group(['prefix' => '{manufacturerId}'], function() use ($router) {
     // $router->get('slider/{slider}', 'SliderController@show');
 });
 
+$router->group(['prefix' => 'product'], function() use ($router) {
+    $router->get('/{nsid}', 'ProductController@showWithoutManufacturer');
+});
+
 $router->group(['prefix' => 'products'], function() use ($router) {
     $router->get('featured', 'ProductController@getFeaturedList');
     $router->get('featured/{featuredProduct}', 'ProductController@getFeatured');
