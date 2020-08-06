@@ -13,6 +13,24 @@ use Cache;
 class ProductController extends Controller
 {
 
+    /**
+     * @OA\Get(
+     *     path="/v1/{$manufacturerId}/products",
+     *     tags={"products"},
+     *     summary="Returns list of active products associated with a brand",
+     *     operationId="index",
+     *     security={{ "apiKey":{} }},
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/ProductResource")
+     *       ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Cannot find brand slug"
+     *     )
+     * )
+     */
     public function index(Request $request, $manufacturerId)
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId) {
@@ -22,11 +40,19 @@ class ProductController extends Controller
         });
     }
 
-    public function store(Request $request)
-    {
-        return Product::create($request->all());
-    }
-
+    /**
+     * @OA\Get(
+     *     path="/v1/{$manufacturerId}/product/{$nsid}",
+     *     tags={"product"},
+     *     summary="Get a single product by NetSuite ID",
+     *     operationId="show",
+     *     security={{ "apiKey":{} }},
+     *     @OA\Response(
+     *         response=400,
+     *         description="Cannot find brand slug or NSID"
+     *     )
+     * )
+     */
     public function show(Request $request, $manufacturerId, $nsid)
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId, $nsid) {
@@ -36,15 +62,19 @@ class ProductController extends Controller
         });
     }
 
-    public function update(Request $request, $product)
+    public function showWithoutManufacturer(Request $request, $nsid)
     {
-        $product->update($request->all());
+        return $this->cacheResponse($request, function() use ($request, $nsid) {
+            $product = Product::where('nsid', $nsid)->withAllRelations()->first();
+            $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
+            return response()->json(['data' => $data], 200, ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
+        });
     }
 
-    public function delete(Request $request, $product)
-    {
-        // Maybe add later
-    }
+    // public function update(Request $request, $product)
+    // {
+    //     $product->update($request->all());
+    // }
 
     public function getSlugs(Request $request, $manufacturerId)
     {
