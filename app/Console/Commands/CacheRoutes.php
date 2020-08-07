@@ -6,8 +6,10 @@ use Illuminate\Console\Command;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use App\Models\{
     FeaturedProduct,
+    Manufacturer,
     Product,
     ProductCategory,
     SliderImage
@@ -35,15 +37,10 @@ class CacheRoutes extends Command
     private $headers;
     private $currentManufacturer;
     private $currentApiVersion;
+    private $manufacturers;
 
     const API_VERSIONS = [
         'v1'
-    ];
-
-    const MANUFACTURERS = [
-        'pulsar',
-        'sightmark',
-        'firefield'
     ];
 
     const QUEUE_NAME = 'route_queue';
@@ -58,6 +55,7 @@ class CacheRoutes extends Command
         parent::__construct();
         $this->router = $router;
         $this->headers = ['X-Api-Key' => config('auth.api_auth.token')];
+        $this->manufacturers = $this->activeManufacturerSlugs();
     }
 
     /**
@@ -69,16 +67,23 @@ class CacheRoutes extends Command
     {
         foreach(self::API_VERSIONS as $version) {
             $this->setApiVersion($version);
-            foreach(self::MANUFACTURERS as $manufacturer) {
+            $this->manufacturers->map(function($manufacturer){
                 $this->setManufacturer($manufacturer);
                 $this->cacheProductRoutes();
                 $this->cacheCategoryRoutes();
-            }
+            });
             $this->cacheFeaturedRoutes();
             $this->cacheSliderRoutes();
         }
         $this->info("Added {$this->cacheCount} routes to queue");
         $this->runQueue();
+    }
+
+    private function activeManufacturerSlugs() : Collection
+    {
+        return Manufacturer::select('slug')->active()->whereHas('productCategories', function($q){
+            $q->isParent();
+        })->get()->pluck('slug');
     }
 
     private function cacheCategoryRoutes()
@@ -115,8 +120,10 @@ class CacheRoutes extends Command
 
     private function cacheAllProductRoutes()
     {
-        Product::active()->byManufacturer($this->currentManufacturer)->orderBy('id', 'DESC')->get()->map(function($product){
+        Product::active()->byManufacturer($this->currentManufacturer)->select('nsid')->orderBy('id', 'DESC')->get()->map(function($product){
+            // Cache both manufacturer prefixed and non prefixed product route
             $this->cacheRoute("product/{$product->nsid}");
+            $this->cacheRoute("product/{$product->nsid}", false);
         });
     }
 
