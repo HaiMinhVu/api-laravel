@@ -33,9 +33,9 @@ use Illuminate\Http\Request;
 // Route::apiResource('navigation', 'NavController')->only(['index', 'show']);
 // Route::apiResource('brand', 'ManufacturerController')->only(['index']);
 
-// Route::group(['prefix' => 'cms', 'namespace' => 'CMS'], function() use ($router) {
-//     Route::apiResource('brand', 'BrandController');
-// });
+Route::group(['namespace' => 'CMS'], function() use ($router) {
+    Route::apiResource('brand', 'BrandController')->only('index');
+});
 
 $router->group(['namespace' => 'Form'], function() use ($router) {
     $router->apiResource('form/submission', 'SubmissionController')->only(['index', 'store']);
