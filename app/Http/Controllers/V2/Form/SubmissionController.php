@@ -33,7 +33,7 @@ class SubmissionController extends Controller
     */
     public function index(Request $request)
     {
-        $formSubmissionBuilder = FormSubmission::with(['fieldSubmissions.formField', 'fieldSubmissions.selectedOption.option', 'brand'])->whereNotNull('created_at');
+        $formSubmissionBuilder = FormSubmission::with(['fieldSubmissions.formField', 'fieldSubmissions.selectedOption.option', 'brand']);
         if($request->has('form-id')) {
             $formSubmissionBuilder = $formSubmissionBuilder->where('form_id', $request->query('form-id'));
         }
@@ -52,6 +52,10 @@ class SubmissionController extends Controller
         if($request->has('to-date')) {
             $toDate = Carbon::parse($request->get('to-date'));
             $formSubmissionBuilder = $formSubmissionBuilder->where('created_at', '<=', $toDate);
+        }
+
+        if($request->has('brand')) {
+            $formSubmissionBuilder->where('brand_id', $request->brand);
         }
 
         if($request->has('all')) {
