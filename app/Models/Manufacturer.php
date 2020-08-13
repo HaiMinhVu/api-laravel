@@ -75,4 +75,10 @@ class Manufacturer extends Model
         return $query->where('manufacture_active', 1);
     }
 
+    public function toggleDelete()
+    {
+        $this->manufacture_active = ($this->manufacture_active == 1) ? 0 : 1;
+        $this->save();
+    }
+
 }

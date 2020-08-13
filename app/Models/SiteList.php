@@ -12,6 +12,7 @@ class SiteList extends Model
 
     public $timestamps = false;
 
+    protected $fillable = ['label'];
 
     public function files()
     {

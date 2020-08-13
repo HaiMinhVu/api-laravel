@@ -31,17 +31,11 @@ class FeaturedProductController extends Controller
     public function store(Request $request)
     {
         $featuredProduct = FeaturedProduct::create([
-            'description' => $request->description
+            'description' => $request->description,
+            'pid' => 0
         ]);
 
         $featuredProduct->associateProductsBySkus($request->skus);
-        // foreach($request->skus as $sku) {
-        //     if($product = Product::withoutGlobalScopes()->where('sku', $sku)->first()) {
-        //         $item = $featuredProduct->children()->create([]);
-        //         $item->product()->associate($product);
-        //         $item->save();
-        //     }
-        // }
 
         return $featuredProduct->load('children.productWithoutGlobalScopes');
     }
