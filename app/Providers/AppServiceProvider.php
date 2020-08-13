@@ -12,9 +12,11 @@ use App\Models\V2\{
     FormSubmission as FormSubmissionModel
 };
 use App\Observers\{
+    SiteListObserver as SiteListObserverV1,
     Product as ProductObserverV1
 };
 use App\Models\{
+    SiteList as SiteListModelV1,
     Product as ProductModelV1
 };
 
@@ -38,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerObservers();
-        // $this->registerObserversV1();
+        $this->registerObserversV1();
     }
 
     private function registerAWSS3Facade()
@@ -60,6 +62,8 @@ class AppServiceProvider extends ServiceProvider
 
     private function registerObserversV1()
     {
-        ProductModelV1::observe(ProductObserverV1::class);
+
+        SiteListModelV1::observe(SiteListObserverV1::class);
+        // ProductModelV1::observe(ProductObserverV1::class);
     }
 }

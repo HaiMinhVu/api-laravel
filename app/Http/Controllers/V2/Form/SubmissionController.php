@@ -16,6 +16,7 @@ use App\Models\V2\{
     FormFieldType,
     FormFieldValue
 };
+use Carbon\Carbon;
 
 class SubmissionController extends Controller
 {
@@ -32,17 +33,32 @@ class SubmissionController extends Controller
     */
     public function index(Request $request)
     {
-        $formSubmissionBuilder = FormSubmission::with('fieldSubmissions.formField', 'fieldSubmissions.selectedOption.option');
+        $formSubmissionBuilder = FormSubmission::with('fieldSubmissions.formField', 'fieldSubmissions.selectedOption.option')->whereNotNull('created_at');
         if($request->has('form-id')) {
-            return $formSubmissionBuilder->where('form_id', $request->query('form-id'))->get();
+            $formSubmissionBuilder = $formSubmissionBuilder->where('form_id', $request->query('form-id'));
         }
         if($request->has('form-slug')) {
             $formSlug = $request->query('form-slug');
-            return $formSubmissionBuilder->whereHas('form', function($q) use ($formSlug) {
+            $formSubmissionBuilder = $formSubmissionBuilder->whereHas('form', function($q) use ($formSlug) {
                 $q->where('name', $formSlug);
-            })->orderBy('form_id', 'DESC')->get();
+            })->orderBy('form_id', 'DESC');
         }
-        return $formSubmissionBuilder->get();
+
+        if($request->has('from-date')) {
+            $fromDate = Carbon::parse($request->get('from-date'));
+            $formSubmissionBuilder = $formSubmissionBuilder->where('created_at', '>=', $fromDate);
+        }
+
+        if($request->has('to-date')) {
+            $toDate = Carbon::parse($request->get('to-date'));
+            $formSubmissionBuilder = $formSubmissionBuilder->where('created_at', '<=', $toDate);
+        }
+
+        if($request->has('all')) {
+            return $formSubmissionBuilder->get();
+        }
+
+        return $formSubmissionBuilder->paginate(10);
         // return FormSubmission::all();
     }
 
