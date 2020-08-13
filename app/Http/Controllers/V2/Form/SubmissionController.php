@@ -33,7 +33,7 @@ class SubmissionController extends Controller
     */
     public function index(Request $request)
     {
-        $formSubmissionBuilder = FormSubmission::with('fieldSubmissions.formField', 'fieldSubmissions.selectedOption.option')->whereNotNull('created_at');
+        $formSubmissionBuilder = FormSubmission::with(['fieldSubmissions.formField', 'fieldSubmissions.selectedOption.option', 'brand'])->whereNotNull('created_at');
         if($request->has('form-id')) {
             $formSubmissionBuilder = $formSubmissionBuilder->where('form_id', $request->query('form-id'));
         }
