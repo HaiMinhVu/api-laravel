@@ -11,7 +11,8 @@ class FilterOrigin
     const CODE = 401;
     const MESSAGE = 'Unauthorized';
     CONST ALLOWABLE_HOSTS = [
-        'https://cms.slmk.dev'
+        'https://cms.slmk.dev',
+        'http://cms.localtest.me'
     ];
 
     /**
