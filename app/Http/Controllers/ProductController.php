@@ -71,11 +71,6 @@ class ProductController extends Controller
         });
     }
 
-    // public function update(Request $request, $product)
-    // {
-    //     $product->update($request->all());
-    // }
-
     public function getSlugs(Request $request, $manufacturerId)
     {
         return $this->cacheResponse($request, function() use ($request, $manufacturerId) {

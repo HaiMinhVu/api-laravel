@@ -77,7 +77,7 @@ class CategoryController extends Controller
     private function mapRequest(Request $request) {
         return [
             'label' => $request->name,
-            'parent' => $request->parent_id,
+            'parent' => ($request->parent_id ?? 0),
             'thumbnail' => $request->thumbnail_id,
             'manufacture' => $request->brand_id,
             'short_description' => $request->short_description,
