@@ -14,7 +14,7 @@ class ManufacturerController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->cacheResponse($request, function() use ($request) { 
+        return $this->cacheResponse($request, function() use ($request) {
             $data = Manufacturer::apiEndpoints()->map(function($key, $endpoint){
                 return [
                     'name' => ucwords(str_replace('-', ' ', $endpoint)),
