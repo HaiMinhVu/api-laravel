@@ -8,7 +8,7 @@ class ContactUs extends Model{
 
     protected $table='form_contact_us';
 
-    protected $fillable = ['first_name','last_name','zip','phone','email','message'];
+    protected $fillable = ['first_name','last_name','zip','phone','email','message', 'form_site'];
 
     public $timestamps = false;
 }
