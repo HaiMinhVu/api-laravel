@@ -10,7 +10,6 @@ use App\Models\{
     FileManager,
     Manufacturer
 };
-use Cache;
 
 class ProductCategory extends Model
 {

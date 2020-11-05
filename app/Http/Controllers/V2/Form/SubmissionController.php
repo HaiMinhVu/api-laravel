@@ -17,7 +17,7 @@ use App\Models\V2\{
     FormFieldValue
 };
 use Carbon\Carbon;
-
+use Log;
 class SubmissionController extends Controller
 {
     public function __construct()
@@ -74,60 +74,63 @@ class SubmissionController extends Controller
     */
     public function store(FormSubmissionRequest $request)
     {
-        if($request->validated()) {
-            $data = $request->all();
-            $brand = Brand::where('slug', $data['brand'])->first();
 
-            $formSubmission = new FormSubmission;
-            $formSubmission->form_id = $data['form_id'];
-            $formSubmission->brand_id = ($brand) ? $brand->id : null;
+        Log::info($request);
 
-            $formSubmission->save();
+        // if($request->validated()) {
+        //     $data = $request->all();
+        //     $brand = Brand::where('slug', $data['brand'])->first();
 
-            foreach($data['fields'] as $field) {
-                // TODO: refactor
-                $type = FormField::getTypeById($field['id']);
+        //     $formSubmission = new FormSubmission;
+        //     $formSubmission->form_id = $data['form_id'];
+        //     $formSubmission->brand_id = ($brand) ? $brand->id : null;
 
-                $formFieldSubmission = new FormFieldSubmission;
-                $formFieldSubmission->form_submission_id = $formSubmission->id;
-                $formFieldSubmission->form_field_id = (int) $field['id'];
-                $formFieldSubmission->name = '';
-                $formFieldSubmission->save();
-                if(in_array($type, FormFieldType::SELECTABLE)) {
-                    $formFieldSelectedOption = new FormFieldSelectedOption;
-                    $formFieldSelectedOption->form_field_submission_id = $formFieldSubmission->id;
-                    $formFieldSelectedOption->form_field_option_id = (int) $field['value'];
-                    $formFieldSelectedOption->save();
-                } else {
-                    $formFieldValue = new FormFieldValue;
-                    $formFieldValue->name = $field['value'] ?? '';
-                    $formFieldValue->form_field_id = (int) $field['id'];
-                    $formFieldValue->form_field_submission_id = $formFieldSubmission->id;
-                    $formFieldValue->save();
-                }
-            }
-            if(array_key_exists('files', $data)) {
-                foreach($data['files'] as $field_id => $file) {
-                    if($file && $file != 'undefined') {
-                        $type = FormField::getTypeById($field_id);
+        //     $formSubmission->save();
 
-                        $formFieldSubmission = new FormFieldSubmission;
-                        $formFieldSubmission->form_submission_id = $formSubmission->id;
-                        $formFieldSubmission->form_field_id = (int) $field_id;
-                        $formFieldSubmission->name = '';
-                        $formFieldSubmission->save();
+        //     foreach($data['fields'] as $field) {
+        //         // TODO: refactor
+        //         $type = FormField::getTypeById($field['id']);
 
-                        $file = File::handleNewUpload($file, FileType::FORM_UPLOAD, $brand->id);
+        //         $formFieldSubmission = new FormFieldSubmission;
+        //         $formFieldSubmission->form_submission_id = $formSubmission->id;
+        //         $formFieldSubmission->form_field_id = (int) $field['id'];
+        //         $formFieldSubmission->name = '';
+        //         $formFieldSubmission->save();
+        //         if(in_array($type, FormFieldType::SELECTABLE)) {
+        //             $formFieldSelectedOption = new FormFieldSelectedOption;
+        //             $formFieldSelectedOption->form_field_submission_id = $formFieldSubmission->id;
+        //             $formFieldSelectedOption->form_field_option_id = (int) $field['value'];
+        //             $formFieldSelectedOption->save();
+        //         } else {
+        //             $formFieldValue = new FormFieldValue;
+        //             $formFieldValue->name = $field['value'] ?? '';
+        //             $formFieldValue->form_field_id = (int) $field['id'];
+        //             $formFieldValue->form_field_submission_id = $formFieldSubmission->id;
+        //             $formFieldValue->save();
+        //         }
+        //     }
+        //     if(array_key_exists('files', $data)) {
+        //         foreach($data['files'] as $field_id => $file) {
+        //             if($file && $file != 'undefined') {
+        //                 $type = FormField::getTypeById($field_id);
 
-                        $formFieldSubmission->files()->attach($file->id);
-                    }
-                }
-            }
-            sleep(1);
-            $formSubmission->touch();
-            return $formSubmission->fresh();
-        }
-        return null;
+        //                 $formFieldSubmission = new FormFieldSubmission;
+        //                 $formFieldSubmission->form_submission_id = $formSubmission->id;
+        //                 $formFieldSubmission->form_field_id = (int) $field_id;
+        //                 $formFieldSubmission->name = '';
+        //                 $formFieldSubmission->save();
+
+        //                 $file = File::handleNewUpload($file, FileType::FORM_UPLOAD, $brand->id);
+
+        //                 $formFieldSubmission->files()->attach($file->id);
+        //             }
+        //         }
+        //     }
+        //     sleep(1);
+        //     $formSubmission->touch();
+        //     return $formSubmission->fresh();
+        // }
+        // return null;
     }
 
     /**

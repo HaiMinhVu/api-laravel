@@ -33,11 +33,9 @@ class ProductController extends Controller
      */
     public function index(Request $request, $manufacturerId)
     {
-        return $this->cacheResponse($request, function() use ($request, $manufacturerId) {
-            $products = Product::active()->byManufacturer($manufacturerId)->with('netsuiteProduct')->get();
-            $data = (new ProductCollectionResource($products))->jsonSerialize();
-            return response()->json(['data' => $data]);
-        });
+        $products = Product::active()->byManufacturer($manufacturerId)->with('netsuiteProduct')->get();
+        $data = (new ProductCollectionResource($products))->jsonSerialize();
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -55,56 +53,43 @@ class ProductController extends Controller
      */
     public function show(Request $request, $manufacturerId, $nsid)
     {
-        return $this->cacheResponse($request, function() use ($request, $manufacturerId, $nsid) {
-            $product = Product::byManufacturer($manufacturerId)->where('nsid', $nsid)->withAllRelations()->first();
-            $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
-            return response()->json(['data' => $data], 200, ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
-        });
+        $product = Product::byManufacturer($manufacturerId)->where('nsid', $nsid)->withAllRelations()->first();
+        $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
+        return response()->json(['data' => $data], 200, ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
     }
 
     public function showWithoutManufacturer(Request $request, $nsid)
     {
-        return $this->cacheResponse($request, function() use ($request, $nsid) {
-            $product = Product::where('nsid', $nsid)->withAllRelations()->first();
-            $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
-            return response()->json(['data' => $data], 200, ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
-        });
+        $product = Product::where('nsid', $nsid)->withAllRelations()->first();
+        $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
+        return response()->json(['data' => $data], 200, ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
     }
 
     public function getSlugs(Request $request, $manufacturerId)
     {
-        return $this->cacheResponse($request, function() use ($request, $manufacturerId) {
-            $data = Product::withoutGlobalScopes()->select('nsid', 'feature_name')->get()->map(function($item){
-                return [
-                    'id' => $item->nsid,
-                    'name' => $item->feature_name
-                ];
-            });
-
-            return response()->json(['data' => $data]);
+        $data = Product::withoutGlobalScopes()->select('nsid', 'feature_name')->get()->map(function($item){
+            return [
+                'id' => $item->nsid,
+                'name' => $item->feature_name
+            ];
         });
+        return response()->json(['data' => $data]);
     }
 
     public function getFeaturedList(Request $request)
     {
-        return $this->cacheResponse($request, function() use ($request) {
-            $data = FeaturedProduct::select(['id', 'description'])->without('product')->where('pid', 0)->get();
-            return response()->json(['data' => $data]);
-        });
+        $data = FeaturedProduct::select(['id', 'description'])->without('product')->where('pid', 0)->get();
+        return response()->json(['data' => $data]);
     }
 
     public function getFeatured(Request $request, $featuredProduct)
     {
-        return $this->cacheResponse($request, function() use ($request, $featuredProduct) {
-            $featuredProductParent = FeaturedProduct::with(['featuredProducts'])->find($featuredProduct);
-
-            $featuredProducts = $featuredProductParent->featuredProducts->map(function($featuredProduct){
-                return $featuredProduct->product;
-            })->sortByDesc('id');
-
-            $data = (new ProductCollectionResource($featuredProducts))->jsonSerialize();
-            return response()->json(['data' => $data]);
-        });
+        $featuredProductParent = FeaturedProduct::with(['featuredProducts'])->find($featuredProduct);
+        $featuredProducts = $featuredProductParent->featuredProducts->map(function($featuredProduct){
+            return $featuredProduct->product;
+        })->sortByDesc('id');
+        $data = (new ProductCollectionResource($featuredProducts))->jsonSerialize();
+        return response()->json(['data' => $data]);
     }
 
 }

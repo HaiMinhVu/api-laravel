@@ -9,17 +9,13 @@ class NavController extends Controller
 {
 	public function index(Request $request)
 	{
-		return $this->cacheResponse($request, function() use ($request) { 
-			$data = NavCat::isParent()->select(['id', 'label'])->get();
-			return response()->json(['data' => $data]);
-		});
+		$data = NavCat::isParent()->select(['id', 'label'])->get();
+		return response()->json(['data' => $data]);
 	}
 
     public function show(Request $request, $id)
     {
-		return $this->cacheResponse($request, function() use ($request, $id) { 
-	        $data = optional(NavCat::find($id))->items;
-	        return response()->json(['data' => $data]);
-	    });
+        $data = optional(NavCat::find($id))->items;
+        return response()->json(['data' => $data]);
     }
 }
