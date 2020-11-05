@@ -17,6 +17,7 @@ use App\Models\V2\{
     FormFieldValue
 };
 use Carbon\Carbon;
+use Log;
 
 class SubmissionController extends Controller
 {
@@ -74,6 +75,9 @@ class SubmissionController extends Controller
     */
     public function store(FormSubmissionRequest $request)
     {
+
+        Log::info('test');
+
         if($request->validated()) {
             $data = $request->all();
             $brand = Brand::where('slug', $data['brand'])->first();
