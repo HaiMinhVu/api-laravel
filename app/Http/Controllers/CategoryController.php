@@ -52,7 +52,7 @@ class CategoryController extends Controller
             })->hasParent();
         })->get();
 
-        $data = new CategoryAllCollectionResource($categories);
+        $data = new CategoryCollectionResource($categories);
 
         return response()->json(['data' => $data]);
     }
