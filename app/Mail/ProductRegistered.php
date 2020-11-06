@@ -37,7 +37,7 @@ class ProductRegistered extends Mailable
      */
     public function build()
     {
-        return $this->to([$this->formSubmission->getValueByLabel('email'), 'hvu@sellmark.net'])
+        return $this->to([$this->formSubmission->getValueByLabel('email'), 'customerreturns@sellmark.net'])
                     ->from(config('mail.from.address'), "No Reply at {$this->formSubmission->brand->name}")
                     ->subject("{$this->formSubmission->brand->name} - Product Registration")
                     ->view('emails.product-registration')
