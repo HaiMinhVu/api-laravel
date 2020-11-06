@@ -21,14 +21,12 @@ class FormSubmissionRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->fields = Form::with('fields.type')->find($this->form_id)->fields;
-
         $fields = [
             'fields' => collect($this->request->all()['fields'])->mapWithKeys(function($field, $id){
                 $data = json_decode($field, true);
                 return [$data['id'] => $data];
             })->all()
         ];
-
         $this->merge($fields);
     }
 
@@ -61,6 +59,7 @@ class FormSubmissionRequest extends FormRequest
         return $this->fields->mapWithKeys(function($field, $idx) {
             return ["fields.{$idx}.{$this->attributeByType($field)}" => $field->description];
         })->toArray();
+        
     }
 
     protected function addFieldRules(FormField $field, $idx)
