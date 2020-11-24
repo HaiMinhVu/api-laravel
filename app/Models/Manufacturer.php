@@ -16,26 +16,20 @@ class Manufacturer extends Model
 
     public static function apiEndpoints()
     {
-        return Cache::remember('manufacturer_endpoints', 3600, function () {
-            $manufacturers = self::all();
-            return $manufacturers->mapWithKeys(function($manufacturer){
-                return [$manufacturer->slug => $manufacturer->id];
-            });
+        $manufacturers = self::all();
+        return $manufacturers->mapWithKeys(function($manufacturer){
+            return [$manufacturer->slug => $manufacturer->id];
         });
     }
 
     public static function cachedAll()
     {
-        return Cache::remember('manufacturer_all', 3600, function() {
-            return self::all();
-        });
+        return self::all();
     }
 
     public static function cachedActive()
     {
-        return Cache::remember('manufacturer_active', 3600, function() {
-            return self::active()->get();
-        });
+        return self::active()->get();
     }
 
     public static function findByPrefix(string $prefix)

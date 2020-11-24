@@ -16,13 +16,13 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected function cacheResponse(Request $request, Closure $callback) {
-    	$cacheKey = Str::slug($request->path()).'_'.App::environment();
+    // protected function cacheResponse(Request $request, Closure $callback) {
+    // 	$cacheKey = Str::slug($request->path()).'_'.App::environment();
 
-    	if(!Cache::has($cacheKey) || $request->has('force-update')) {
-    		Cache::put($cacheKey, $callback()); 
-    	}
+    // 	if(!Cache::has($cacheKey) || $request->has('force-update')) {
+    // 		Cache::put($cacheKey, $callback()); 
+    // 	}
 
-    	return Cache::get($cacheKey);
-    }
+    // 	return Cache::get($cacheKey);
+    // }
 }

@@ -12,30 +12,24 @@ class ScriptController extends Controller
 
     public function getStatus(Request $request, $id)
     {
-    	return $this->cacheResponse($request, function() use ($id) {
-	    	$url = self::BASE_NETSUITE_ITEMSTOCKURL.'&id='.$id;
-	    	return $this->getExternalUrlContents($url);
-	    });
+    	$url = self::BASE_NETSUITE_ITEMSTOCKURL.'&id='.$id;
+    	return $this->getExternalUrlContents($url);
     }
 
     public function getExternalUrl(Request $request, $encodedUrl)
     {
-    	return $this->cacheResponse($request, function() use ($encodedUrl, $request) {
-            $encodedUrl = str_replace('_', '/', $encodedUrl);
-    		$url = base64_decode($encodedUrl);
-    		$contents = $this->getExternalUrlContents($url);
-            return response($contents);
-    	});
+        $encodedUrl = str_replace('_', '/', $encodedUrl);
+		$url = base64_decode($encodedUrl);
+		$contents = $this->getExternalUrlContents($url);
+        return response($contents);
     }
 
     public function getExternalUrlFromParam(Request $request)
     {
         if($encodedUrl = $request->get('url')) {
-            return $this->cacheResponse($request, function() use ($encodedUrl) {
-                $url = base64_decode($encodedUrl);
-                $contents = $this->getExternalUrlContents($url);
-                return response($contents);
-            });
+            $url = base64_decode($encodedUrl);
+            $contents = $this->getExternalUrlContents($url);
+            return response($contents);
         }
         return null;
     }
