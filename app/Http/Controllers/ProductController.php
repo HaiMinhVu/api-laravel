@@ -92,4 +92,11 @@ class ProductController extends Controller
         return response()->json(['data' => $data]);
     }
 
+    public function getAllProducts(Request $request)
+    {
+        $products = Product::active()->get(['sku', 'Name', 'nsid']);
+        $data = (new ProductCollectionResource($products))->jsonSerialize();
+        return response()->json(['data' => $data]);
+    }
+
 }
