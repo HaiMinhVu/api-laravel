@@ -94,8 +94,13 @@ class ProductController extends Controller
 
     public function getAllProducts(Request $request)
     {
-        $products = Product::active()->get(['sku', 'Name', 'nsid']);
-        $data = (new ProductCollectionResource($products))->jsonSerialize();
+        $data = Product::withoutGlobalScopes()->select('nsid', 'sku', 'feature_name')->get()->map(function($item){
+            return [
+                'id' => $item->nsid,
+                'sku' => $item->sku,
+                'name' => $item->feature_name
+            ];
+        });
         return response()->json(['data' => $data]);
     }
 
