@@ -43,6 +43,7 @@ Route::group(['middleware' => ['api']], function() use ($router) {
     });
 
     $router->group(['prefix' => 'products'], function() use ($router) {
+        $router->get('/', 'ProductController@getAllProducts');
         $router->get('featured', 'ProductController@getFeaturedList');
         $router->get('featured/{featuredProduct}', 'ProductController@getFeatured');
         $router->get('netsuite', 'NetsuiteProductController@index');
