@@ -26,7 +26,8 @@ class NetsuiteProductController extends Controller
     public function massUpdate(Request $request)
     {
         return collect($request->all())->map(function($netsuiteProduct){
-            return NetsuiteProduct::updateFromRemote($netsuiteProduct);
+            return NetsuiteProduct::updateOrCreate(['nsid' => $netsuiteProduct['nsid']], $netsuiteProduct);
+            // return NetsuiteProduct::updateFromRemote($netsuiteProduct);
         })->filter()->count();
     }
 
