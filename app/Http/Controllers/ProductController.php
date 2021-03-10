@@ -53,14 +53,14 @@ class ProductController extends Controller
      */
     public function show(Request $request, $manufacturerId, $nsid)
     {
-        $product = Product::byManufacturer($manufacturerId)->where('nsid', $nsid)->withAllRelations()->first();
+        $product = Product::byManufacturer($manufacturerId)->where('nsid', $nsid)->withoutGlobalScopes()->withAllRelations()->first();
         $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
         return response()->json(['data' => $data], 200, ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
     }
 
     public function showWithoutManufacturer(Request $request, $nsid)
     {
-        $product = Product::where('nsid', $nsid)->withAllRelations()->first();
+        $product = Product::where('nsid', $nsid)->withoutGlobalScopes()->withAllRelations()->first();
         $data = ($product) ? (new ProductWithRelationsResource($product))->jsonSerialize() : null;
         return response()->json(['data' => $data], 200, ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
     }
