@@ -30,10 +30,10 @@ class Product extends Model
     {
         parent::boot();
 
-        static::addGlobalScope('active_status', function($builder) {
-            $builder->where('status', 1);
-            $builder->active();
-        });
+        // static::addGlobalScope('active_status', function($builder) {
+        //     $builder->where('status', 1);
+        //     $builder->active();
+        // });
     }
 
     public function loadRelations()
