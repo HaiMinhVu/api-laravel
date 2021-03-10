@@ -67,7 +67,7 @@ class ProductController extends Controller
 
     public function getSlugs(Request $request, $manufacturerId)
     {
-        $data = Product::select('nsid', 'feature_name')->get()->map(function($item){
+        $data = Product::withoutGlobalScopes()->select('nsid', 'feature_name')->get()->map(function($item){
             return [
                 'id' => $item->nsid,
                 'name' => $item->feature_name
@@ -94,7 +94,7 @@ class ProductController extends Controller
 
     public function getAllProducts(Request $request)
     {
-        $data = Product::select('nsid', 'sku', 'feature_name')->get()->map(function($item){
+        $data = Product::withoutGlobalScopes()->select('nsid', 'sku', 'feature_name')->get()->map(function($item){
             return [
                 'id' => $item->nsid,
                 'sku' => $item->sku,

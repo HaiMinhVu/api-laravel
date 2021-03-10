@@ -30,10 +30,10 @@ class Product extends Model
     {
         parent::boot();
 
-        // static::addGlobalScope('active_status', function($builder) {
-        //     $builder->where('status', 1);
-        //     $builder->active();
-        // });
+        static::addGlobalScope('active_status', function($builder) {
+            $builder->where('status', 1);
+            $builder->active();
+        });
     }
 
     public function loadRelations()
@@ -76,7 +76,7 @@ class Product extends Model
     {
         return $query->whereHas('netsuiteProduct', function($q){
             $q->activeInWebstore();
-            $q->current();
+            // $q->current();
             $q->where('onlineprice', '!=', 0);
             $q->orderBy('startdate', 'DESC');
             $q->orderBy('sku', 'DESC');
