@@ -31,4 +31,16 @@ class NetsuiteProductController extends Controller
         })->filter()->count();
     }
 
+    public function getAllNSProducts(Request $request)
+    {
+        $data = NetsuiteProduct::get()->map(function($item){
+            return [
+                'id' => $item->nsid,
+                'sku' => $item->sku,
+                'name' => $item->featured_description
+            ];
+        });
+        return response()->json(['data' => $data]);
+    }
+
 }

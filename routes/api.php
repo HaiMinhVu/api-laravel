@@ -50,6 +50,10 @@ Route::group(['middleware' => ['api']], function() use ($router) {
         $router->post('netsuite', 'NetsuiteProductController@massUpdate');
     });
 
+    $router->group(['prefix' => 'ns-products'], function() use ($router) {
+        $router->get('/', 'NetsuiteProductController@getAllNSProducts');
+    });
+
     // Route::resource('script', 'ScriptController')->only(['index', 'show']);
     Route::get('script/{url}', 'ScriptController@getUrl');
     Route::get('item/status/{id}', 'ScriptController@getStatus');
