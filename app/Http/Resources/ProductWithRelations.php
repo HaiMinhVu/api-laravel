@@ -52,8 +52,8 @@ class ProductWithRelations extends Product
         $data = [
             'images' => $images->toArray(),
             'battery' => [
-                'type' => $this->battery['list']['type'],
-                'quantity' => $this->battery['battery_qty']
+                'type' => $this->battery ? $this->battery['list']['type'] : '',
+                'quantity' => $this->battery ? $this->battery['battery_qty'] : ''
             ],
             'features' => $this->features->map(function($feature){
                 return trim($feature->feat_item);
