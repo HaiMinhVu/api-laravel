@@ -3,12 +3,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{FeaturedProduct, Product};
+use App\Models\{FeaturedProduct, Product, FileManager};
 use App\Http\Resources\{
     ProductCollection as ProductCollectionResource,
     ProductWithRelations as ProductWithRelationsResource
 };
+
+use App\Http\Resources\ProductWithManual;
 use Cache;
+use Response;
 
 class ProductController extends Controller
 {
@@ -102,6 +105,28 @@ class ProductController extends Controller
             ];
         });
         return response()->json(['data' => $data]);
+    }
+
+    public function getProductsWithManual(Request $request)
+    {
+        $query = FileManager::with(
+            'manuals.product'
+        )->existsOnS3()->orderBy('ID', 'desc')->byType('manual');
+
+        $results = $query->get();
+
+        $items = $results->map(function($item){
+            return new ProductWithManual($item, 200);
+        });
+
+        $file = fopen("products.csv","w");
+        foreach($items as $item) {
+            $item = json_decode(json_encode($item), 1);
+            fputcsv($file, array($item['id'], $item['file_name'], $item['display_name'], $item['brand'], $item['url'], $item['sku'], $item['languages']));
+
+        }
+        return 'test';
+        
     }
 
 }

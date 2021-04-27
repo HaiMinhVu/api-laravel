@@ -29,4 +29,13 @@ class Manual extends Model
             'ID'
         );
     }
+
+    public function product()
+    {
+        return $this->hasOne(
+            Product::class,
+            'id',
+            'product_id'
+        )->select('id', 'sku', 'nsid');
+    }
 }
