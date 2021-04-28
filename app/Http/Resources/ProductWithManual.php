@@ -25,21 +25,21 @@ class ProductWithManual extends JsonResource
         $url = $this->resource->getS3Url();
 
         $data = [
-            'id' => $this->ID,
+            // 'id' => $this->ID,
             'file_name' => $this->file_name,
-            'display_name' => $this->display_name,
+            // 'display_name' => $this->display_name,
             // 'description' => $this->description,
             'brand' => $this->resource->siteList->label,
             'url' => $url,
             // 'raw_url' =>  $this->resource->getS3Url(),
         ];
 
-        if(count($this->manuals)){
-            $data['sku'] = $this->manuals[0]->product ? $this->manuals[0]->product->sku : '';
-        }
-        else{
-            $data['sku'] = '';
-        }
+        // if(count($this->manuals)){
+        //     $data['sku'] = $this->manuals[0]->product ? $this->manuals[0]->product->sku : '';
+        // }
+        // else{
+        //     $data['sku'] = '';
+        // }
 
 
         if($this->resource->isType('manual')) {

@@ -109,24 +109,42 @@ class ProductController extends Controller
 
     public function getProductsWithManual(Request $request)
     {
-        $query = FileManager::with(
-            'manuals.product'
-        )->existsOnS3()->orderBy('ID', 'desc')->byType('manual');
-
-        $results = $query->get();
+        $results = Product::with(
+            'manuals',
+        )->select('id', 'sku', 'nsid', 'Name')->get();
 
         $items = $results->map(function($item){
-            return new ProductWithManual($item, 200);
+            return [
+                'sku' => $item->sku,
+                'name' => $item->Name,
+                'manuals' => $item->manuals->map(function($manual){
+                    return new ProductWithManual($manual);
+                })
+            ];
+                 
         });
 
         $file = fopen("products.csv","w");
-        foreach($items as $item) {
-            $item = json_decode(json_encode($item), 1);
-            fputcsv($file, array($item['id'], $item['file_name'], $item['display_name'], $item['brand'], $item['url'], $item['sku'], $item['languages']));
+        fputcsv($file, array('SKU', 'Name', 'Brand', 'File Name', 'Url', 'Languages'));
 
+        foreach ($items as $item) {
+            foreach ($item['manuals'] as $manual) {
+                $manual = json_decode(json_encode($manual), 1);
+                if(count($manual)){
+                    $tmp = [
+                        $item['sku'],
+                        $item['name'],
+                        array_key_exists("brand",$manual) ? $manual['brand'] : '',
+                        array_key_exists("file_name",$manual) ? $manual['file_name'] : '',
+                        array_key_exists("url",$manual) ? $manual['url'] : '',
+                        array_key_exists("languages",$manual) ? $manual['languages'] : ''
+                    ];
+                    fputcsv($file, $tmp);
+                }
+                
+            }
         }
-        return 'test';
-        
+        return 'Exported';
     }
 
 }
