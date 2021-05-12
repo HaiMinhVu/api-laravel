@@ -27,6 +27,7 @@ class ProductWithRelations extends Product
 
         if($this->images) {
             $imagesRelation = $this->images->filter(function($image) use ($images, $initialData) {
+                return $image->fileManager()->exists();
                 return $image->fileManager()->exists() && ($images->first()['remote_path'] != $image->fileManager->s3FilePath());
                 return $image->fileManager()->exists() && $image->fileManager->s3FilePath() != $images->first()['remote_path'];
             })->map(function($image) use ($images) {
