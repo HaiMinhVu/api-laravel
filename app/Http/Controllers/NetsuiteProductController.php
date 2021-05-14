@@ -37,7 +37,8 @@ class NetsuiteProductController extends Controller
             return [
                 'id' => $item->nsid,
                 'sku' => $item->sku,
-                'name' => $item->featured_description
+                'name' => $item->featured_description,
+                'category' => $item->ns_product_category
             ];
         });
         return response()->json(['data' => $data]);
